@@ -256,378 +256,283 @@ To edit the output of the  job that output to Data Lake
 
 ### Deploy the data generator as a Web Job
 
-1. Download data generator: https://github.com/Azure/Cortana-Intelligence-Gallery-Content/blob/master/Tutorials/SQL-Data-Warehouse/datagenerator.zip
-1. Unzip: **datagenerator.zip**
-1. Edit: **Rage.exe.config**
-1. Replace: EVENTHUBNAME: With: **personaleventhub[*UNIQUE*]**
+1. Download data generator: https://github.com/daden-ms/arm/blob/master/cdrgenerator.zip, Click raw and the file will be download
+1. Unzip: **cdrdatagenerator.zip**
+1. Edit: **cdr-gen.exe.config**
+1. Replace: EVENTHUBPATH: With: **adleventhub[*UNIQUE*]**
 1. Get CONNECTION STRING
     1. Browse: https://manage.windowsazure.com (Get the endpoint)
     1. Click: SERVICE BUS
-    1. Select: **personalservicebus[*UNIQUE*]**
+    1. Select: **adlservicebus[*UNIQUE*]**
     1. Click: CONNECTION INFORMATION
     1. Copy: CONNECTION STRING
-1. Replace: ENDPOINT: With: CONNECTION STRING
-1. Zip: **datagenerator.zip**
+1. Find: key Microsoft.ServiceBus.ConnectionString : replace its value With: CONNECTION STRING;TransportType=Amqp
+1. Zip: **cdrdatagenerator.zip**
 1. Browse: https://manage.windowsazure.com
 1. Click: **NEW** > **COMPUTE** > **WEB APP** > **QUICK CREATE**
-1. Type: URL: **ratings[*UNIQUE*]**
+1. Type: URL: **adl[*UNIQUE*]**
 1. Select: APP SERVICE PLAN: From your subscription
-1. Click: **CREATE WEB APP** > **WEB APPS** > **ratings[*UNIQUE*]** > **WEBJOBS** > **ADD A JOB**
-1. Type: NAME: **ratings[*UNIQUE*]**
-1. Browse: **datagenerator.zip**
+1. Click: **adl[*UNIQUE*]** > **WEBJOBS** > **ADD A JOB**
+1. Type: NAME: **adl[*UNIQUE*]**
+1. Browse: **cdrdatagenerator.zip**
 1. Select: HOW TO RUN: **Run continuously**
 1. Click: **Finish**
 
-Step 3) Get connection string from Event Hub
--------------------------------------------
+(Need to update the zip so new default Parameters are set
+500 10000 RealTime 5 0.005 US001
+  )
 
-Data generator
+### Upload U-SQL script to Azure Blob Storage
 
+Download the script from https://github.com/daden-ms/arm/blob/master/script/cdrSummary.txt, and save it to a folder with name "script"
 
-Step 2) Modify Output of Azure Stream Analytic Jobs
------------------------------------------
+Download Microsoft Azure Storage Explorer, login with your credentials, and  
+1. Select the storage account:**storage[*unique*]**
+1. Right Click  **"Create Blob container"**
+1. Type: **cdrdata**
+1. Right click **cdrdata**
+1. Select **Open Blob Container Editor**
+1. On the top of the right panel, Click **Upload**, Select **Upload Folder** and upload the script folder
+
+### Create Data Factory
+
+
+
+To get started, click the below button.
+
+<a target="_blank" id="deploy-to-azure" href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaden-ms%2Farm%2Fmaster%2Fazuredeploy_part2.json"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+
+This will create a new "blade" in the Azure portal(https://ms.portal.azure.com).
+
+This will create a new "blade" in the Azure portal.
+
+![arm1-image](./media/arm2.png)
+
+1. Parameters
+   1. Type: UNIQUE (string): **[*UNIQUE*]** (Use the one previously entered)
+   1. Select: LOCATION: **[*LOCATION*]** (Use the one previously selected)
+   1. Type: AZUREMLENDPOINT: **[*AZUREMLENDPOINT*]**
+	    1. Browse: https://studio.azureml.net
+	    1. Click: **WEB SERVICES** > **CDR Call Failure Prediction (Azure Data Lake)** > **BATCH EXECUTION**
+	    1. Copy: POST: **REQUEST URI** (Everything from "https" up to and including "jobs")
+   1. Type: AZUREMLAPIKEY: **[*AZUREMLAPIKEY*]**
+	    1. Browse: https://studio.azureml.net
+	    1. Click: **WEB SERVICES** > **CDR Call Failure Prediction (Azure Data Lake)**
+	    1. Click: Copy: **API key**
+   1. Click: **OK**
+1. Select: Subscription: **[*SUBSCRIPTION*]** (Use the one previously selected)
+1. Select: Resource group: **[*UNIQUE*]** (Use the one previously selected)
+1. Click: **Review legal terms** > **Create**
+1. Check: **Pin to dashboard** (If you want it on your dashboard)
+1. Click: **Create**
+
+## Add Azure Data Lake Store Link Service
+1. Browse: https://portal.azure.com
+1. Click: **Data factories** > **dataFactory[*UNIQUE*]** > **Author and deploy**
+1. Hover mouse over the icon, stop at **New Data Store**, Click *New Data Store**, Select "Azure Data Lake Store"
+1. Copy
 
-The outputs of the two Azure Stream Analytic Jobs in the above are just a place holder. Now go to
 
-The Azure Storage Account will be used to manage different storage blobs
-that will be associated with this sample. The Azure Storage Account can
-be created through the Portal.
+{
+    "name": "AzureDataLakeStoreLinkedService",
+    "properties": {
+        "type": "AzureDataLakeStore",
+        "description": "",
+        "typeProperties": {
+            "authorization": "<Click 'Authorize' to allow this data factory and the activities it runs to access this Data Lake Store with your access rights>",
+            "dataLakeStoreUri": "'https://adls[unique].azuredatalakestore.net/webhdfs/v1",
+            "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
+        }
+    }
+}
 
-![](media/storageAccount.png)
 
-Record the keys and associated connection strings for the storage
-account. This will be needed by other components wishing to store or
-access information managed under this account.
+To the Editor, replace [unique] with your unique string
+1. Click **Authorize**, input your credentials
+1. Click: **Deploy**
 
-Under the storage account, create a blob storage container named
-“cdrdata.”
 
-Ultimately this container will contain four folders: input, aggregate,
-processed, and scripts.
 
-The ‘input’ folder will serve as a staging area for incoming call detail
-records (CDR) prior to moving them to the Data Lake Store. The
-“aggregate” folder is the location for summary data produced by a USQL
-script that processes the collection of CDR data residing in the Azure
-Data Lake Store. This is the information that will be processed within
-the Azure Machine Learning (AML) environment. The “processed” folder is
-the location for the data produced by the AML model. The “scripts”
-folder is the repository for the USQL scripts that will be run under the
-Azure Data Lakes Analytics account and produce the summary CDR data.
 
-Step 3) Create an Azure Data Lake Store.
-----------------------------------------
 
-The Data Lake Store (ADLS) will serve as the repository of all CDR data.
-After creating the Data Lake Store a folder named cdrdata will be
-created that will serve as the location for all the CDR data. The CDR
-data will be transferred using an Azure Data Factory Pipeline from the
-staging area in the blob storage (cdrdata/input).
+## Add Azure Data Lake Analytic Link Service
+1. Hover mouse over the icon, stop at **New Compute**, Click *New Data Store**, Select "Azure Data Lake Analytics"
+1. Copy
 
-Record the URL for the Data Lake Store. This will be needed by other
-components wishing to store or access information managed under this
-account.
+
+{
+    "name": "AzureDataLakeAnalyticsLinkedService",
+    "properties": {
+        "type": "AzureDataLakeAnalytics",
+        "description": "",
+        "typeProperties": {
+            "authorization": "<Authorization code is automatically retrieved after clicking 'Authorize' and completing the OAuth login>",
+            "accountName": "adla[unique]",
+            "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
+        }
+    }
+}
 
-Click on the “Data Explorer” menu item within the Data Lake Store just
-created. Create a new folder named “cdrdata.” Within the cdrdata folder
-you will need to create 2 more folders named:
+## Add Azure Data Lake Data Sets
+1. Hover mouse over the icon, stop at **New Data Set**, Click *New Data Store**, Select "Azure Data Lake Store"
+1. Copy the content from https://github.com/daden-ms/arm/blob/master/dataset/DataLakeTable.json in to the Editor
+1. Click: **Deploy**
 
-(1) input: This will be the main CDR repository.
+1. Hover mouse over the icon, stop at **New Data Set**, Click *New Data Store**, Select "Azure Data Lake Store"
+1. Copy the content from https://github.com/daden-ms/arm/blob/master/dataset/DataLakeCDRAggregateTable.json in to the Editor
+1. Click: **Deploy**
 
-(2) aggregate: This folder will contain the results from USQL scripts
-    that will periodically process the collected CDR data to produce
-    summary statistics.
+## Add Data Pipeline
+1. Hover mouse over the icon, stop at **New Pipeline**
+1. Copy the content from https://github.com/daden-ms/arm/blob/master/pipeline/DataLakeCDRSummary.json in to the Editor
+1. Edit: start: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock (for example http://www.timeanddate.com/worldclock/timezone/utc)
+1. Edit: end: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock plus three hours (for example http://www.timeanddate.com/worldclock/timezone/utc)
+1. Edit: **"isPaused": true** : to **"isPaused": false**
+1. Click: **Deploy**
 
-Step 3) Create an Azure Data Analytics Account
-----------------------------------------------
+1. Hover mouse over the icon, stop at **New Pipeline**
+1. Copy the content from https://github.com/daden-ms/arm/blob/master/pipeline/DataLakeStoreToSqlDW.json in to the Editor
+1. Edit: start: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock (for example http://www.timeanddate.com/worldclock/timezone/utc)
+1. Edit: end: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock plus three hours (for example http://www.timeanddate.com/worldclock/timezone/utc)
+1. Edit: **"isPaused": true** : to **"isPaused": false**
+1. Click: **Deploy**
 
-The ADLA account will serve as the context and provide the credentials
-for scheduling and running the USQL query over the ADLS CDR repository.
+## Start Machine Leanring Pipeline
+1. Expand: **Pipelines**
+1. Select: **MLPipeline**
+1. Edit: start: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock (for example http://www.timeanddate.com/worldclock/timezone/utc)
+1. Edit: **"isPaused": true** : to **"isPaused": false**
+1. Click: **Deploy**
 
-Step 4) Create an Azure Event Hub.
------------------------------------------
 
-Creating an Azure Event Hub is done in the original version of the Azure
-Portal, not the new version. As shown in figure 2 below. The event hub
-will be used to receive incoming CDRs from the simulated telco switches.
+## ???Create the PBI dashboard
 
-![](media/eventHub.png)
+### ???Realtime visualization
 
-Figure 2: Creating the Azure Event Hub
+![dashboard-usecase-realtime](./media/dashboard-usecase-realtime.png)
 
-### Creating the Event Hub Rules
+1. Browse: https://powerbi.microsoft.com
+1. Click: **Sign in** (Login with your credentials)
+1. Show: The navigation pane
+1. Click: **adllDB** (Under the Datasets folder > **Line chart** # Under Visualizations)
+1. Drag: **Time**: To: **Axis**
+1. Drag: **CallFailure**: To: **Legend**
+1. Drag: **CallCount**: To: **Values**
+1. Click: **Save**
+1. Type: Name: **personalDB**
+1. Click: **Save** > **Pin visual** (pin icon on upper-right)
+1. Select: **New dashboard**
+1. Type: Name: **personalDB**
+1. Click: **Pin**
 
-You will next need to provision rights for sending and receiving
-messages through the event hub. To do this you click on the “configure”
-icon/label for the hub you just created. (see figure 3)
+### ???Predictive visualization
 
-![](media/eventHubRules.png)
 
-Figure 3: Configure the Event Hub
 
 
-After creating the Event Hub rule, record the Policy Name, Azure
-generated keys, and endpoints. This will be needed to send and retrieve
-information from the Hub. Sample name and keys are provided below,
-however your keys will be different.
 
-    Policy Name: SendRule
-    Policy Key: [send rule key>]
-    Endpoint= [send endpoint]
+### ???Using historical data
 
-    Policy Name: ReceiveRule
-    Policy Key: [receive rule key]
-    Endpoint= [receive endpoint]
+The real time and especially the predictive visualizations will take a long while to fill in, so below are the steps for these visualizations for a sample past event where all the data is already there.
 
-Step 5) Create an Azure Stream Analytics Service.
--------------------------------------------------
-
-Creating a Streaming Analytics Service is done through the new version
-of the Portal.
-
-![](media/streamingAnalytics.png)
-
-Figure 4: Provisioning Azure Streaming Analytics (ASA)
-
-The Streaming Analytics Service is responsible for receiving
-information sent to the Event Hub that was just created, performing some
-filter of that data to selecting a subset of the available CDR fields for storage, and persisting the CDR data in the Azure Storage Blob staging area.
-
-![](media/asaInput.png)
-
-Figure 5: Provisioning the ASA Input.
-
-When the Streaming Analytics Service is initially created it will not
-have any inputs or outputs provisioned. After creating the service, you
-will be presented with a screen where you have the opportunity to set
-the input to the event hub you previously created. By selecting the
-“Inputs” section of the newly created service you will be provided with
-a screen where you can enter the appropriate information for the event
-hub.
-
-![ASA Output](media/asaOutput.png)
-
-Figure 6: Provisioning the ASA Output.
-
-Change the “Event Hub Serialization Format”
-field from JSON to CSV. Also insure that you enter the “Send Rule”
-information that you previously captured.
-
-You will next connect the Output of the ASA to the storage account
-created in step 2 of this sample. Click on the “Outputs” section of the
-ASA and add a new output. You will need to enter the storage account and
-the storage account key for the azure blob storage. Insure that you set
-the serialization format to comma separated CSV with UTF-8 encoding.
-
-Set the Path Pattern for the stored information to “input/{date}/{time}”
-Doing this will result in the ASA creating hourly CDR files in the
-appropriate date/time subdirectories within the blob storage.
-
-The final step in provisioning the ASA service is entering the query
-that will select the appropriate fields from the CDR for storage in the
-Azure Storage Blob staging area and the Azure data lake Store. Use the
-following query for the ASA service:
-
-    SELECT
-      CallRecTime, SwitchNum, CallingIMSI, CallingNum, CalledIMSI, CalledNum,
-      IncomingTrunk , OutgoingTrunk
-    FROM
-      cdrhubInput
-
-Step 7) Download the CDR Data Generator
----------------------------------------
-
-Unless you are in the telecommunications industry you presumably do not
-have streaming CDR data available to you. Use the link below to download
-a software program that will act as a “virtual telecom switch” and
-generate a stream of CDR records. You will need to edit the app.config
-file to provide the name of the event hub you created and the connection
-string for the “SendRule.” If you are connected to the internet you can
-run this program and begin to push generated CDRs through the event hub
-and streaming analytics service to the Azure Storage Blob staging area.
-
-[TelcoGenerator.zip](http://download.microsoft.com/download/8/B/D/8BD50991-8D54-4F59-AB83-3354B69C8A7E/TelcoGenerator.zip "TelcoGenerator.zip")
-
-Step 8) Publishing the USQL script
-----------------------------------
-
-On an hourly basis a scheduled Azure Data Factory pipeline will send
-initiate a USQL analytical job over the cdr data stored in the Azure
-Data Lake cdrdata/input collection. USQL, a hybrid of standard SQL and
-C\# functions and assemblies can be used to efficiently perform a number
-of operations over this data. For this sample the USQL will generate
-hourly CDR aggregate statistics of the number of calls by switch and
-trunk. This data will be persisted to the /cdr/aggregate/ folder in the
-Data Lake Storage repository where it will be transmitted to the storage
-blob for processing through the Azure Machine Learning model.
-
-You can learn more about U-SQL and Azure Data Lake Analytics at the
-following:
-
-[Overview of Microsoft Azure Data Lake Analytics](https://azure.microsoft.com/en-us/documentation/articles/data-lake-analytics-overview/)
-
-Create a file named “cdrsummary.txt” and enter the following USQL text.
-
-    @cdrdata =
-     EXTRACT CallRecTime DateTime,
-       Switch string,
-       CallingIMSI string,
-       CallingNum string,
-       CalledIMSI string,
-       CalledNum string,
-       IncomingTrunk string,
-       OutgoingTrunk string
-     FROM "/cdrdata/input/{*}"
-     USING Extractors.Csv();
-
-    @rs1 =
-     SELECT
-       DateTime.Now AS ProcessingDate,
-       Switch,
-       OutgoingTrunk,
-       COUNT(*) AS CallCount
-    FROM
-      @cdrdata
-    WHERE
-      CallRecTime &gt; DateTime.Now.AddHours(-1)
-    GROUP
-      BY Switch,OutgoingTrunk;
-
-    OUTPUT @rs1
-     TO "/cdrdata/aggregate/hourSummary.csv"
-     USING Outputters.Csv();
+#### Real time visualization
 
-Upload the file to the Azure Storage Blob under the cdrdata/scripts
-directory. The ADF pipeline will read the script from this location
-before sending it through the ADLA environment for processing.
-
-Step 9) Create an Azure Machine Learning Model.
------------------------------------------------
-
-The objective of this sample is to demonstrate moving data from an
-external source (a telco switch environment), process and store that
-information in a Azure Data Lake Store, use USQL to triage that cdr
-corpus to produce summary statistics, and demonstrate how this
-information can be processed through an Azure Machine Learning Model for
-performing anomaly or predictive analytic tasks. It is mot within the
-scope of this sample to train the appropriate ML model. Instead, to
-demonstrate the engineering aspects of processing the information
-through an AML model we will create an “identity model” within the AML
-environment which will serve as a proxy for a trained AML model.
+1. Edit: **personalDB2**
+1. Click: **New page**
+1. Click: **Line Chart**
+1. Expand: **Ratings**
+1. Drag: **DateTime**: To: **Axis**
+1. Drag: **DeviceId**: To: **Legend**
+1. Drag: **Rating**: To: **Values**
+1. Drag: **EventId**: To: **Visual Level Filters**
+1. Expand: **EventId**
+1. Select: **Is**
+1. Type: **2**
+1. Click: **Apply filter** > **Save**
 
-![](media/mlmodel.png)
+#### Predictive visualization
 
-Figure 7: The 'Identity' Machine Learning Model
+1. Click: **Line Chart**
+1. Expand: Fields: **AverageRatings**
+1. Drag: **DateTimeStop**: To: **Axis**
+1. Drag: **AverageRating**: To: **Values**
+1. Drag: **EventId**: To: **Visual Level Filters**
+1. Expand: **EventId**
+1. Select: **Is**
+1. Type: **2**
+1. Click: **Apply filter** > **Save**
 
-“identity Model.” This model expects 4 fields as input, the call time,
-the switch, the outgoing trunk, and the number of calls over the past
-hour on that switch. A trained model would use this information to
-identity anomalous switch behavior or predict future possible issues
-within the telecom company’s switch fabric. In this example the model
-will return what is posted to it. This information will ultimately be
-stored by the ADF ML Pipeline in the Azure storage blob under the
-/cdrdata/summary location for use by network analysts.
+#### ????Update dashboard
 
-The AML Model consists of a Python processing module, a “Manual Data
-Entry” module that will represent “training data.” And the necessary
-input and output web service endpoints.
+1. Click: **Save**
+1. Select: **Existing dashboard** > **personalDB**
+1. Click: **Pin**
+1. Select: Dashboards: **personalDB**
+1. Resize tiles
 
-![](media/manualDataEntry.png)
 
-Figure 8: Adding manual training data
 
-To create the model, create a new experiment and replicate the structure shown in the illustration within the AML Studio. Click on the “Enter Data Manually” module and enter
-information as illustrated in figure 7. Be sure to unselect the “HasHeader” checkbox. This manual data entry module is serving only to inform the model that it expects 4 fields, the first three are strings and the fourth is numeric.
 
-The python script requires no editing and should look as follows:
 
-    def azureml_main(dataframe1 = None, dataframe2 = None):
-       import pandas as pd
-       return dataframe1
-
-
-
-Save the model, then run and deploy as a web service. Record the API Key
-and the Batch Execution endpoint. They will be required to call the
-model from the ADF ML Pipeline.
-
-Step 10) Create an Azure Data Factory
--------------------------------------
-
-Next we will create an Azure Data Factory. The data factory will contain
-the following 4 pipelines:
-
--   The “blobToDataLakePipeline” for moving CDR data from Azure Blob
-    Storage to the Azure Data Lake
-
--   The “cdrSummaryPipeline” responsible for coordinating the processing
-    of the USQL operation over the CDR data residing in the Azure Data
-    Lake Store
-
--   The “dataLakeSummaryToBlobPipeline” for moving calculated summary
-    statistics from the Azure Data Lake Store to the Azure Blob Storage
-    for processing through the appropriate Azure Machine
-    Learning models. In this scenario the “identity model”
-    described above.
-
--   The “MLPipeline” for coordinating and scheduling interaction with
-    the Azure Machine Learning models through the model’s batch
-    web service.
-
-The pipeline will maintain the following linked services:
-
--   The AzureDataLakeAnalyticsLinkedService responsible for maintaining
-    access information for the Azure Data Lake Analytics environment.
-    This is a compute node that will orchestrate the execution of the
-    U-SQL script.
-
--   The AzureDataLakeStoreLinkedService responsible for managing access
-    information for the Azure Data Lake Storage account.
-
--   The AzureStorageLinkedService responsible for maintaining access to
-    the Azure Storage Account associated with the Azure Blob storage
-    used in this sample.
-
--   The IdentityMLLinkedService encapsulating the compute node
-    associated with the Identity AML model.
-
-And the following data set identifiers:
-
--   AzureBlobCDRData. This dataset represents the CDR staged data prior
-    to its periodic loading to the Azure Data Lake Store.
-
--   AzureBlobCDRAggregate. This dataset represents hourly summary data
-    produced by the U-SQL query running over the Azure Data Lake Store
-    CDR repository. This data originates with the ADLS but is moved by
-    the dataLakeSummaryToBlobPipeline to the Azure Blob Storage area.
-
--   AzureBlobCDRAggregateSource. This dataset is an abstraction of the
-    AzureBlobCDRAggregate representing a source dataset for MLPipeline.
-
--   AzureBlobCDRProcessed. This dataset in Azure Blob Storage represents
-    the response from the Azure Machine Learning model. In this sample
-    it is an Identity Model.
-
--   DataLakeTable. This data set in Azure Data Lake Storage represents
-    the CDR warehouse.
-
--   DataLakeCDRAggregateTable. This dataset in Azure Data Lake Storage
-    is a staging dataset for the results of the U-SQL query prior to the
-    data being moved to the Azure Blob Storage.
-
--   DataLakeCDRAggregateSource. This dataset in Azure Data Lake Storage
-    is an abstraction of the DataLakeCDRAggregateTable that is used as a
-    source for the dataLakeSummaryToBlobPipeline.
-
-**&lt;&lt;&lt; provide link to template for creating the ADF here
-&gt;&gt;&gt;**
-
-Conclusion
+###???Bravo!!!
 ==========
+Congratulations! If you made it to this point, you should have a running sample with real time and predictive pipelines showcasing the power of Azure Data Lake Store and its integration with Azure Machine Learning and  many of the other Azure services. The next section lists the steps to tear things down when you are done.
 
-This sample has illustrated the movement of data between an external
-data source, an Azure Data Storage Blob, and an Azure Data Lake Store.
-It demonstrated calling USQL for processing information residing in the
-Data Lake Store and demonstrated processing information through a Azure
-Machine Learning model. Future versions of this sample will include
-integration with PowerBI for consumption by analysts.
+
+###???Undeploy
+1. Delete Resources (Service Bus, Event Hub, SQL Data Warehouse, Data Factories)
+    1. Browse: https://portal.azure.com
+    1. Click: **Resource groups**
+    1. Right click: **[*UNIQUE*]** (your resource group)
+    1. Select: **Delete**
+1. Delete WebApp (data generator)
+    1. Browse: https://manage.windowsazure.com
+    1. Click: **WEB APPS**
+    1. Select: **ratings[*UNIQUE*]** (Your web app)
+    1. Click: **DELETE**
+1. Delete AML Service
+    1. Browse: https://studio.azureml.net
+    1. Click: **WEB SERVICES**
+    1. Select: **Ratings**
+    1. Click: **DELETE** > **EXPERIMENTS**
+    1. Select: **Ratings**
+    1. Click: **DELETE**
+1. Delete PBI dashboard
+    1. Browse: https://powerbi.microsoft.com
+    1. Select: **Dashboards**
+    1. Right click: **personalDB**
+    1. Select: **REMOVE** > **Reports**
+    1. Right click: **personalDB**
+    1. Select: **REMOVE** > **Datasets**
+    1. Right click: **personalDB**
+    1. Select: **REMOVE**
+
+## Debugging
+
+### Verify AML web service is working
+
+1. Browse: https://studio.azureml.net
+1. Click: **my experiments** > **WEB SERVICES**
+1. Select: **Ratings** (Your web service)
+1. Click: **TEST** (Verify that request/response works)
+1. Click: **DATABASE QUERY**:
+      SELECT
+      CAST(Rating AS INT) AS Rating
+      FROM Ratings
+      WHERE EventId = 1
+1. Click: DATABASE SERVER NAME: **personal-[*UNIQUE*].database.windows.net** > DATABASE NAME: **personalDB** > SERVER USER ACCOUNT NAME: **personaluser** > SERVER USER ACCOUNT PASSWORD: **pass@word1** > **OK**
+
+### Verify data generator is working
+
+#### From Portal
+
+1. Browse: https://manage.windowsazure.com
+1. Click: **personalstreamanalytics[*UNIQUE*]** > **DASHBOARD** > **Operation Logs**
+1. Select: a recent log
+1. Click: DETAILS
+
+#### From SQL Client
+
+1. Connect to the Data Warehouse using a SQL client of your choice
+1. Run SQL to view the latest entries. For example:
+	      select * from Ratings order by DateTime desc;
