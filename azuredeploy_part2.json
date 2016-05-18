@@ -1,0 +1,274 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#", 
+    "contentVersion": "1.0.0.0", 
+    "variables": {
+        "paramVars": {
+            "location": "[parameters('location')]", 
+            "accountType": "Standard-GRS", 
+            "scriptContainer": "scriptcontainer"
+        }, 
+        "settings": {
+            "sqlSettings": {
+                "sqlEdition": "DataWarehouse", 
+                "sqlDatabaseName": "[concat(variables('currentSolAccSettings').title,'DB')]", 
+                "sqlServerPassword": "pass@word1", 
+                "sqlEndIpAddress": "255.255.255.255", 
+                "sqlServerName": "[concat(variables('currentSolAccSettings').title,'-',parameters('unique'))]", 
+                "requestedServiceObjectiveName": "DW400", 
+                "sqlMaxSizeBytes": "2147483648", 
+                "sqlCollation": "SQL_Latin1_General_CP1_CI_AS", 
+                "sqlLocation": "[parameters('location')]", 
+                "sqlStartIpAddress": "0.0.0.0", 
+                "sqlServerUserName": "[concat(variables('currentSolAccSettings').title,'user')]"
+            }, 
+            "asaSettings": {
+                "asaJobName": "[concat(variables('currentSolAccSettings').title,'streamanalytics',parameters('unique'))]", 
+                "asaBlobContainer": "[concat(variables('currentSolAccSettings').title,'stream')]", 
+                "asaBlobPathPattern": "rawdata/{date}/{time}", 
+                "asaLocation": "[parameters('location')]"
+            }, 
+            "storageSettings": {
+                "storageAccountName": "[concat(variables('currentSolAccSettings').title,'storage',parameters('unique'))]"
+            }, 
+            "apiVersion": {
+                "asaApiVersion": "2015-09-01", 
+                "sqlApiVersion": "12.0", 
+                "azureMLApiVersion": "2015-09-01", 
+                "storageAccountApiVersion": "2014-06-01", 
+                "serviceBusApiVersion": "2014-09-01", 
+                "dataFactoryApiVersion": "2015-09-01"
+            }, 
+            "serviceBusSettings": {
+                "serviceBusNamespaceName": "[concat(variables('currentSolAccSettings').title,'servicebus',parameters('unique'))]", 
+                "serviceBusIngestEventHubName": "[concat(variables('currentSolAccSettings').title,'eventhub',parameters('unique'))]", 
+                "serviceBusSharedAccessPolicyName": "RootManageSharedAccessKey"
+            }, 
+            "sqlSettings2": {
+                "sqlServerName": "WIN-DIFB3TPU2L9", 
+                "sqlServerPassword": "EY65t3yBn4se", 
+                "sqlServerUserName": "sqluser1", 
+                "sqlServerDatabaseName": "personalDB"
+            }
+        }, 
+        "dataFactoryName": "[concat('dataFactory', parameters('unique'))]", 
+        "dataLakeSettings": {
+            "location": "East US 2"
+        }, 
+        "currentSolAccSettings": "[variables('solutionAccSettings')['personal']]", 
+        "storageAccountName": "[concat('storage', parameters('unique'))]", 
+        "solutionAccSettings": {
+            "personal": {
+                "datafactorySettings": {
+                    "inputSerialization": {
+                        "type": "CSV", 
+                        "properties": {
+                            "fieldDelimiter": ",", 
+                            "encoding": "UTF8"
+                        }
+                    }, 
+                    "outputSerialization": {
+                        "type": "CSV", 
+                        "properties": {
+                            "fieldDelimiter": ",", 
+                            "encoding": "UTF8"
+                        }
+                    }
+                }, 
+                "title": "adl"
+            }
+        }, 
+        "adlAnalyticsName": "[concat('adla', parameters('unique'))]", 
+        "adlStoreName": "[concat('adls', parameters('unique'))]"
+    }, 
+    "parameters": {
+        "AMLAPIKey": {
+            "defaultValue": "https://ussouthcentral.services.azureml.net/workspaces/8825fd27275c4f3799d572186b3df613/services/d1ac86531c884453826b0f1434cab087/jobs", 
+            "type": "string", 
+            "metadata": {
+                "description": "Azure ML experiment key"
+            }
+        }, 
+        "unique": {
+            "type": "string", 
+            "metadata": {
+                "description": "A globally unique string appended to all the resources"
+            }
+        }, 
+        "location": {
+            "defaultValue": "West US", 
+            "metadata": {
+                "description": "Location to deploy resources"
+            }, 
+            "type": "string", 
+            "allowedValues": [
+                "South Central US", 
+                "West Europe", 
+                "North Europe", 
+                "West US"
+            ]
+        }, 
+        "AMLEndPoint": {
+            "defaultValue": "Kfh3ko+asLFT+54uQ/MjxEsNA/nZ0IIrWDJSi7yfSzHIp94w8aph9dYjmOrU4Sk1yC04cjPro16XRK0OIhf3/g==", 
+            "type": "string", 
+            "metadata": {
+                "description": "Azure ML experiment batch execution end point"
+            }
+        }
+    }, 
+    "resources": [
+        {
+            "name": "[concat('dataFactory', parameters('unique'), 'CDR')]", 
+            "apiVersion": "2015-09-01", 
+            "location": "North Europe", 
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/',variables('storageAccountName'))]"
+            ], 
+            "type": "Microsoft.DataFactory/datafactories", 
+            "resources": [
+                {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+                    ], 
+                    "type": "linkedservices", 
+                    "name": "AzureSqlDWLinkedService", 
+                    "apiVersion": "2015-09-01", 
+                    "properties": {
+                        "typeProperties": {
+                            "connectionString": "[concat('Server=tcp:',variables('settings')['sqlSettings'].sqlServerName,'.database.windows.net,1433;Initial Catalog=',variables('settings')['sqlSettings'].sqlDatabaseName,';Integrated Security=False;User ID=',variables('settings')['sqlSettings'].sqlServerUserName,';Password=',variables('settings')['sqlSettings'].sqlServerPassword,';Connect Timeout=30;Encrypt=True')]"
+                        }, 
+                        "type": "AzureSqlDW", 
+                        "description": "Datawarehouse"
+                    }
+                }, 
+                {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+                    ], 
+                    "type": "linkedservices", 
+                    "name": "AzureStorageLinkedService", 
+                    "apiVersion": "2015-09-01", 
+                    "properties": {
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+                        }, 
+                        "type": "AzureStorage", 
+                        "description": ""
+                    }
+                }, 
+                {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+                    ], 
+                    "type": "linkedservices", 
+                    "name": "MLLinkedService", 
+                    "apiVersion": "2015-09-01", 
+                    "properties": {
+                        "typeProperties": {
+                            "mlEndpoint": "[parameters('AMLEndPoint')]", 
+                            "apiKey": "[parameters('AMLAPIKey')]"
+                        }, 
+                        "type": "AzureML", 
+                        "description": ""
+                    }
+                }, 
+                {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]", 
+                        "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]"
+                    ], 
+                    "type": "datasets", 
+                    "name": "AzureSqlDWAggregated", 
+                    "apiVersion": "2015-09-01", 
+                    "properties": {
+                        "linkedServiceName": "AzureSqlDWLinkedService", 
+                        "typeProperties": {
+                            "tableName": "SwitchCallInfo"
+                        }, 
+                        "type": "AzureSqlDWTable", 
+                        "availability": {
+                            "frequency": "Minute", 
+                            "interval": 15
+                        }, 
+                        "published": false
+                    }
+                }, 
+                {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]", 
+                        "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]"
+                    ], 
+                    "type": "datasets", 
+                    "name": "AzureSqlDWScored", 
+                    "apiVersion": "2015-09-01", 
+                    "properties": {
+                        "linkedServiceName": "AzureSqlDWLinkedService", 
+                        "typeProperties": {
+                            "tableName": "ForcastCallFailure"
+                        }, 
+                        "type": "AzureSqlDWTable", 
+                        "availability": {
+                            "frequency": "Minute", 
+                            "interval": 15
+                        }, 
+                        "published": false
+                    }
+                }, 
+                {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]", 
+                        "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/datasets/', 'AzureSqlDWAggregated')]", 
+                        "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]", 
+                        "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/datasets/','AzureSqlDWScored')]", 
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]"
+                    ], 
+                    "type": "datapipelines", 
+                    "name": "MLPipeline", 
+                    "apiVersion": "2015-09-01", 
+                    "properties": {
+                        "activities": [
+                            {
+                                "typeProperties": {
+                                    "webServiceParameters": {
+                                        "Database server name": "[variables('settings')['sqlSettings'].sqlServerName]", 
+                                        "User name": "[variables('settings')['sqlSettings'].sqlServerUserName]", 
+                                        "Password": "variables('settings')['sqlSettings'].sqlServerPassword", 
+                                        "Database query": "$$Text.Format('DELETE FROM ForcastCallFailure WHERE Time BETWEEN  \\'{0:yyyy-MM-dd HH:mm:ss}\\' AND dateadd(minute, 15, \\'{0:yyyy-MM-dd HH:mm:ss}\\'); WITH Numbers AS (SELECT TOP (180) n = CONVERT(INT, ROW_NUMBER() OVER (ORDER BY s1.[object_id])) - 1 FROM sys.all_objects AS s1 CROSS JOIN sys.all_objects AS s2 ) SELECT Time, SUM(CallFailure) AS CallFailure FROM ( SELECT DATEADD(MINUTE, -n, \\'{0:yyyy-MM-dd HH:mm:ss}\\') AS Time, ISNULL(CallFailure, 0) AS CallFailure FROM Numbers LEFT OUTER JOIN (SELECT * from SwitchCallInfo WHERE Time BETWEEN DATEADD(MINUTE, -180, \\'{0:yyyy-MM-dd HH:mm:ss}\\') AND \\'{0:yyyy-MM-dd HH:mm:ss}\\' AND Switch=\\'\"US001\"\\') SwitchCallInfoFiltered  ON DATEADD(MINUTE, -n, \\'{0:yyyy-MM-dd HH:mm:ss}\\') = SwitchCallInfoFiltered.Time) temp GROUP BY Time  ORDER BY Time ASC', WindowEnd)", 
+                                        "Database name": "[variables('settings')['sqlSettings'].sqlDatabaseName]"
+                                    }
+                                }, 
+                                "name": "IdentityML", 
+                                "inputs": [
+                                    {
+                                        "name": "AzureSqlDWAggregated"
+                                    }
+                                ], 
+                                "outputs": [
+                                    {
+                                        "name": "AzureSqlDWScored"
+                                    }
+                                ], 
+                                "linkedServiceName": "MLLinkedService", 
+                                "scheduler": {
+                                    "frequency": "Minute", 
+                                    "interval": 15
+                                }, 
+                                "policy": {
+                                    "retry": 3, 
+                                    "concurrency": 1, 
+                                    "timeout": "00:05:00"
+                                }, 
+                                "type": "AzureMLBatchScoring", 
+                                "description": "AML webservice"
+                            }
+                        ], 
+                        "end": "2016-05-12T20:00:00Z", 
+                        "description": "Execute Identity ML pipeline", 
+                        "start": "2016-05-12T19:00:00Z", 
+                        "isPaused": false, 
+                        "pipelineMode": "Scheduled"
+                    }
+                }
+            ]
+        }
+    ]
+}
