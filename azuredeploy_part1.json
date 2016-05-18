@@ -1,0 +1,358 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#", 
+    "contentVersion": "1.0.0.0", 
+    "variables": {
+        "paramVars": {
+            "location": "[parameters('location')]", 
+            "accountType": "Standard-GRS", 
+            "scriptContainer": "scriptcontainer"
+        }, 
+        "settings": {
+            "sqlSettings": {
+                "sqlEdition": "DataWarehouse", 
+                "sqlDatabaseName": "[concat(variables('currentSolAccSettings').title,'DB')]", 
+                "sqlServerPassword": "pass@word1", 
+                "sqlEndIpAddress": "255.255.255.255", 
+                "sqlServerName": "[concat(variables('currentSolAccSettings').title,'-',parameters('unique'))]", 
+                "requestedServiceObjectiveName": "DW400", 
+                "sqlMaxSizeBytes": "2147483648", 
+                "sqlCollation": "SQL_Latin1_General_CP1_CI_AS", 
+                "sqlLocation": "[parameters('location')]", 
+                "sqlStartIpAddress": "0.0.0.0", 
+                "sqlServerUserName": "[concat(variables('currentSolAccSettings').title,'user')]"
+            }, 
+            "asaSettings": {
+                "asaJobName": "[concat(variables('currentSolAccSettings').title,'streamanalytics',parameters('unique'))]", 
+                "asaBlobContainer": "[concat(variables('currentSolAccSettings').title,'stream')]", 
+                "asaBlobPathPattern": "rawdata/{date}/{time}", 
+                "asaLocation": "[parameters('location')]"
+            }, 
+            "storageSettings": {
+                "storageAccountName": "[concat(variables('currentSolAccSettings').title,'storeage',parameters('unique'))]"
+            }, 
+            "apiVersion": {
+                "asaApiVersion": "2015-09-01", 
+                "sqlApiVersion": "12.0", 
+                "azureMLApiVersion": "2015-09-01", 
+                "storageAccountApiVersion": "2014-06-01", 
+                "serviceBusApiVersion": "2014-09-01", 
+                "dataFactoryApiVersion": "2015-09-01"
+            }, 
+            "serviceBusSettings": {
+                "serviceBusNamespaceName": "[concat(variables('currentSolAccSettings').title,'servicebus',parameters('unique'))]", 
+                "serviceBusIngestEventHubName": "[concat(variables('currentSolAccSettings').title,'eventhub',parameters('unique'))]", 
+                "serviceBusSharedAccessPolicyName": "RootManageSharedAccessKey"
+            }, 
+            "sqlSettings2": {
+                "sqlServerName": "WIN-DIFB3TPU2L9", 
+                "sqlServerPassword": "EY65t3yBn4se", 
+                "sqlServerUserName": "sqluser1", 
+                "sqlServerDatabaseName": "personalDB"
+            }
+        }, 
+        "dataFactoryName": "[concat('dataFactory', parameters('unique'))]", 
+        "dataLakeSettings": {
+            "location": "East US 2"
+        }, 
+        "currentSolAccSettings": "[variables('solutionAccSettings')['personal']]", 
+        "storageAccountName": "[concat('adla', parameters('unique'))]", 
+        "solutionAccSettings": {
+            "personal": {
+                "datafactorySettings": {
+                    "inputSerialization": {
+                        "type": "CSV", 
+                        "properties": {
+                            "fieldDelimiter": ",", 
+                            "encoding": "UTF8"
+                        }
+                    }, 
+                    "outputSerialization": {
+                        "type": "CSV", 
+                        "properties": {
+                            "fieldDelimiter": ",", 
+                            "encoding": "UTF8"
+                        }
+                    }
+                }, 
+                "title": "adl"
+            }
+        }, 
+        "adlAnalyticsName": "[concat('adla', parameters('unique'))]", 
+        "adlStoreName": "[concat('adls', parameters('unique'))]"
+    }, 
+    "parameters": {
+        "unique": {
+            "type": "string", 
+            "metadata": {
+                "description": "A globally unique string appended to all the resources"
+            }
+        }, 
+        "location": {
+            "defaultValue": "West US", 
+            "metadata": {
+                "description": "The location to deploy all the resources (except the Data Lake Storage and Analytics accounts, which must be created in East US 2)"
+            }, 
+            "type": "string", 
+            "allowedValues": [
+                "South Central US", 
+                "West Europe", 
+                "East US 2", 
+                "West US"
+            ]
+        }
+    }, 
+    "resources": [
+        {
+            "name": "[concat(variables('settings')['asaSettings'].asaJobName, 'powerbi')]", 
+            "apiVersion": "[variables('settings')['apiVersion'].asaApiVersion]", 
+            "location": "[variables('settings')['asaSettings'].asaLocation]", 
+            "dependsOn": [
+                "[concat('Microsoft.EventHub/namespaces/',        variables('settings')['serviceBusSettings'].serviceBusNamespaceName)]"
+            ], 
+            "type": "Microsoft.StreamAnalytics/streamingJobs", 
+            "properties": {
+                "sku": {
+                    "name": "standard"
+                }, 
+                "inputs": [
+                    {
+                        "name": "cdreventhubinput", 
+                        "properties": {
+                            "serialization": "[variables('currentSolAccSettings')['datafactorySettings'].inputSerialization]", 
+                            "type": "stream", 
+                            "datasource": {
+                                "type": "Microsoft.ServiceBus/EventHub", 
+                                "properties": {
+                                    "SharedAccessPolicyKey": "[listKeys(resourceid('Microsoft.Eventhub/namespaces/authorizationRules',variables('settings')['serviceBusSettings'].serviceBusNamespaceName,variables('settings')['serviceBusSettings'].serviceBusSharedAccessPolicyName ), variables('settings')['apiVersion'].serviceBusApiVersion).primaryKey]", 
+                                    "SourcePartitionCount": 16, 
+                                    "ServiceBusNamespace": "[variables('settings')['serviceBusSettings'].serviceBusNamespaceName]", 
+                                    "EventHubName": "[variables('settings')['serviceBusSettings'].serviceBusIngestEventHubName]", 
+                                    "SharedAccessPolicyName": "[variables('settings')['serviceBusSettings'].serviceBusSharedAccessPolicyName]", 
+                                    "EventHubConsumerGroup": "powerbi"
+                                }
+                            }
+                        }
+                    }
+                ], 
+                "outputs": [
+                    {
+                        "Name": "callinfoperminute", 
+                        "Properties": {
+                            "DataSource": {
+                                "Type": "Microsoft.Sql/Server/Database", 
+                                "Properties": {
+                                    "Table": "bogo", 
+                                    "Password": "[variables('settings')['sqlSettings'].sqlServerPassword]", 
+                                    "User": "[variables('settings')['sqlSettings'].sqlServerUserName]", 
+                                    "Server": "[variables('settings')['sqlSettings'].sqlServerName]", 
+                                    "Database": "[variables('settings')['sqlSettings'].sqlDatabaseName]"
+                                }
+                            }
+                        }
+                    }
+                ], 
+                "EventsOutOfOrderMaxDelayInSeconds": 10, 
+                "transformation": {
+                    "name": "powerbi", 
+                    "properties": {
+                        "query": "SELECT System.TimeStamp AS [Time], COUNT(*) as [CallCount], SUM(CASE [Failed] WHEN 'True' THEN 1 ELSE 0 END) as [CallFailure] INTO callinfoperminute FROM cdreventhubinput TIMESTAMP BY [Date] WHERE SwitchNum='US001' GROUP BY TumblingWindow(minute, 1)", 
+                        "streamingUnits": 1
+                    }
+                }, 
+                "EventsOutOfOrderPolicy": "Adjust"
+            }, 
+            "metadata": {
+                "description": "Create the Stream Analytics Resource"
+            }
+        }, 
+        {
+            "name": "[concat(variables('settings')['asaSettings'].asaJobName, 'datalake')]", 
+            "apiVersion": "[variables('settings')['apiVersion'].asaApiVersion]", 
+            "location": "[variables('settings')['asaSettings'].asaLocation]", 
+            "dependsOn": [
+                "[concat('Microsoft.EventHub/namespaces/',        variables('settings')['serviceBusSettings'].serviceBusNamespaceName)]"
+            ], 
+            "type": "Microsoft.StreamAnalytics/streamingJobs", 
+            "properties": {
+                "sku": {
+                    "name": "standard"
+                }, 
+                "inputs": [
+                    {
+                        "name": "cdreventhubinput", 
+                        "properties": {
+                            "serialization": "[variables('currentSolAccSettings')['datafactorySettings'].inputSerialization]", 
+                            "type": "stream", 
+                            "datasource": {
+                                "type": "Microsoft.ServiceBus/EventHub", 
+                                "properties": {
+                                    "SharedAccessPolicyKey": "[listKeys(resourceid('Microsoft.Eventhub/namespaces/authorizationRules',variables('settings')['serviceBusSettings'].serviceBusNamespaceName,variables('settings')['serviceBusSettings'].serviceBusSharedAccessPolicyName ), variables('settings')['apiVersion'].serviceBusApiVersion).primaryKey]", 
+                                    "SourcePartitionCount": 16, 
+                                    "ServiceBusNamespace": "[variables('settings')['serviceBusSettings'].serviceBusNamespaceName]", 
+                                    "EventHubName": "[variables('settings')['serviceBusSettings'].serviceBusIngestEventHubName]", 
+                                    "SharedAccessPolicyName": "[variables('settings')['serviceBusSettings'].serviceBusSharedAccessPolicyName]", 
+                                    "EventHubConsumerGroup": "datalake"
+                                }
+                            }
+                        }
+                    }
+                ], 
+                "outputs": [
+                    {
+                        "Name": "datalakestoreoutput", 
+                        "Properties": {
+                            "DataSource": {
+                                "Type": "Microsoft.Sql/Server/Database", 
+                                "Properties": {
+                                    "Table": "bogo", 
+                                    "Password": "[variables('settings')['sqlSettings'].sqlServerPassword]", 
+                                    "User": "[variables('settings')['sqlSettings'].sqlServerUserName]", 
+                                    "Server": "[variables('settings')['sqlSettings'].sqlServerName]", 
+                                    "Database": "[variables('settings')['sqlSettings'].sqlDatabaseName]"
+                                }
+                            }
+                        }
+                    }
+                ], 
+                "EventsOutOfOrderMaxDelayInSeconds": 10, 
+                "transformation": {
+                    "name": "datalake", 
+                    "properties": {
+                        "query": "SELECT * INTO datalakestoreoutput FROM cdreventhubinput", 
+                        "streamingUnits": 1
+                    }
+                }, 
+                "EventsOutOfOrderPolicy": "Adjust"
+            }, 
+            "metadata": {
+                "description": "Create the Stream Analytics Resource"
+            }
+        }, 
+        {
+            "name": "[variables('adlStoreName')]", 
+            "tags": {}, 
+            "apiVersion": "2015-10-01-preview", 
+            "location": "[variables('dataLakeSettings').location]", 
+            "dependsOn": [], 
+            "type": "Microsoft.DataLakeStore/accounts"
+        }, 
+        {
+            "name": "[variables('adlAnalyticsName')]", 
+            "tags": {}, 
+            "apiVersion": "2015-10-01-preview", 
+            "location": "[variables('dataLakeSettings').location]", 
+            "dependsOn": [
+                "[concat('Microsoft.DataLakeStore/accounts/',variables('adlStoreName'))]"
+            ], 
+            "type": "Microsoft.DataLakeAnalytics/accounts", 
+            "properties": {
+                "defaultDataLakeStoreAccount": "[variables('adlStoreName')]", 
+                "dataLakeStoreAccounts": [
+                    {
+                        "name": "[variables('adlStoreName')]"
+                    }
+                ]
+            }
+        }, 
+        {
+            "name": "[variables('settings')['serviceBusSettings'].serviceBusNamespaceName]", 
+            "apiVersion": "[variables('settings')['apiVersion'].serviceBusApiVersion]", 
+            "location": "[parameters('location')]", 
+            "type": "Microsoft.EventHub/namespaces", 
+            "properties": {
+                "region": "[parameters('location')]"
+            }, 
+            "resources": [
+                {
+                    "name": "[variables('settings')['serviceBusSettings'].serviceBusIngestEventHubName]", 
+                    "apiVersion": "[variables('settings')['apiVersion'].serviceBusApiVersion]", 
+                    "location": "[parameters('location')]", 
+                    "dependsOn": [
+                        "[concat('Microsoft.EventHub/namespaces/', variables('settings')['serviceBusSettings'].serviceBusNamespaceName)]"
+                    ], 
+                    "type": "eventHubs", 
+                    "properties": {
+                        "path": "[variables('settings')['serviceBusSettings'].serviceBusIngestEventHubName]"
+                    }, 
+                    "resources": [
+                        {
+                            "properties": {}, 
+                            "type": "ConsumerGroups", 
+                            "name": "powerbi", 
+                            "apiVersion": "[variables('settings')['apiVersion'].serviceBusApiVersion]", 
+                            "dependsOn": [
+                                "[variables('settings')['serviceBusSettings'].serviceBusIngestEventHubName]"
+                            ]
+                        }, 
+                        {
+                            "properties": {}, 
+                            "type": "ConsumerGroups", 
+                            "name": "datalake", 
+                            "apiVersion": "[variables('settings')['apiVersion'].serviceBusApiVersion]", 
+                            "dependsOn": [
+                                "[variables('settings')['serviceBusSettings'].serviceBusIngestEventHubName]"
+                            ]
+                        }
+                    ], 
+                    "metadata": {
+                        "description": "Create the Event Hub"
+                    }
+                }
+            ], 
+            "metadata": {
+                "description": "Create the Event Hub Namespace"
+            }
+        }, 
+        {
+            "name": "[variables('settings')['sqlSettings'].sqlServerName]", 
+            "apiVersion": "[variables('settings')['apiVersion'].sqlApiVersion]", 
+            "location": "[variables('settings')['sqlSettings'].sqlLocation]", 
+            "type": "Microsoft.Sql/servers", 
+            "properties": {
+                "version": "12.0", 
+                "administratorLogin": "[variables('settings')['sqlSettings'].sqlServerUserName]", 
+                "administratorLoginPassword": "[variables('settings')['sqlSettings'].sqlServerPassword]"
+            }, 
+            "resources": [
+                {
+                    "name": "[variables('settings')['sqlSettings'].sqlDatabaseName]", 
+                    "apiVersion": "[variables('settings')['apiVersion'].sqlApiVersion]", 
+                    "location": "[variables('settings')['sqlSettings'].sqlLocation]", 
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', variables('settings')['sqlSettings'].sqlServerName)]"
+                    ], 
+                    "type": "databases", 
+                    "properties": {
+                        "collation": "[variables('settings')['sqlSettings'].sqlCollation]", 
+                        "edition": "[variables('settings')['sqlSettings'].sqlEdition]"
+                    }
+                }, 
+                {
+                    "name": "AllowAllWindowsAzureIps", 
+                    "apiVersion": "[variables('settings')['apiVersion'].sqlApiVersion]", 
+                    "location": "[variables('settings')['sqlSettings'].sqlLocation]", 
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', variables('settings')['sqlSettings'].sqlServerName)]"
+                    ], 
+                    "type": "firewallrules", 
+                    "properties": {
+                        "endIpAddress": "[variables('settings')['sqlSettings'].sqlEndIpAddress]", 
+                        "startIpAddress": "[variables('settings')['sqlSettings'].sqlStartIpAddress]"
+                    }
+                }
+            ], 
+            "metadata": {
+                "description": "Create the SQL Database"
+            }
+        }, 
+        {
+            "properties": {
+                "accountType": "Standard_LRS"
+            }, 
+            "type": "Microsoft.Storage/storageAccounts", 
+            "name": "[variables('storageAccountName')]", 
+            "apiVersion": "2015-06-15", 
+            "location": "[resourceGroup().location]"
+        }
+    ]
+}
