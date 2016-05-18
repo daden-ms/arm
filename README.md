@@ -100,20 +100,21 @@ is written as
 
 
 
-Step 1) Deployment of Multiple Resources, including:
+### Step 1) Deployment of Multiple Resources, including:
 -----------------------------------------
 1. Service Bus,
 2. Event Hub,
 3. Stream Analytics Job
 4. SQL Server, SQL Data Warehouse,
+5. Azure Storage Account
 5. Azure Data Lake Store Account
 6. Azure Data Lake Analytics Account
 
-To get started, click the below button.
+You will need a unique string to identify your deployment. We suggest you use only letter and number in this string and the length should not be greater than 9. Please open your memo file and write down "unique:[unique]" with "[unique]" replaced with your actual unique string. To get started, click the below button.
 
 <a target="_blank" id="deploy-to-azure" href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaden-ms%2Farm%2Fmaster%2Fazuredeploy_part1.json"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
-This will create a new "blade" in the Azure portal.
+This will create a new "blade" in the Azure portal(https://ms.portal.azure.com).
 
 
 ![](media/arm1.PNG)
@@ -131,19 +132,162 @@ This will create a new "blade" in the Azure portal.
 1. Check: **Pin to dashboard** (If you want it on your dashboard)
 1. Click: **Create**
 
-
-
-
 The resource group will serve as an organizational framework for the
 associated Azure services.
 
-After logging into to the Azure Portal, select the “Resource Groups”
-option from the menu. This will open a frame where you can select the
-option to create a new resource group. You can name it what you wish,
-but for the sake of this sample we will call it the “cdrresourcegroup.”
+After deployment,  in the Azure Portal https://ms.portal.azure.com , select the “Resource Groups”
+option from the menu, use the **[*UNIQUE*]** to find the resource group you just created and you will find all the resources that have just been deployed. The following table listed a few import account information and also infomation that you need to use in walking through this tutorial.  Please note that '[unique]'
+should be replaed with your own unique string and '[' and ']' should not in your final infomation.
 
-Step 2) Create an Azure Storage Account.
+| Item   |      Value      |
+|----------|:-------------:|
+| service bus name space | adlservicebus[unique]|
+| event hub name | adleventhub[unique]    |  
+| stream analytic job output power bi| adlstreamanalytics[unique]]powerbi|
+| stream analytic job output data lake| adlstreamanalytics[unique]]datalake|
+| storage account name | storage[unique] |
+| Data Lake Store Account Name | adls[unique]|
+| Data Lake Analytic Account Name | adla[unique]|
+|SQL Server name|adl-[unique].database.windows.net   |
+|SQL Server user name |adluser   |
+|SQL Server user password |pass@word1   |
+|SQL Database Name| adlDB|
+Table 1: Resources
+
+
+
+### Step 2) Create Azure SQL Data Warehouse tables
+
+Next you need to create the matching tables in the SQL Data Warehouse. You can do this by following these steps:
+
+1. Start Visual Studio. Note that you must have installed the SQL Server Data Tools.
+1. Select: View: **SQL Server Object Explorer**
+1. Right click: **SQL Server**
+1. Click: **Add SQL Server...**
+1. Type: Server Name: **adl-[*UNIQUE*].database.windows.net**
+1. Select: Authentication: **Sql Server Authentication**
+1. Type: User name: **adkuser**
+1. Type: Password: **pass@word1**
+1. Select: Database Name: **adlDB**
+1. Click: **Connect**
+1. Right click: **adllDB**
+1. Select: **New Query...**
+1. Copy and paste:
+
+CREATE TABLE [dbo].[SwitchCallInfo] (
+    [Time] datetime NOT NULL,
+    [Switch] varchar(100) COLLATE Latin1_General_100_CI_AS_KS_WS NOT NULL,
+    [CallCount] bigint NOT NULL,
+    [CallFailure] bigint NOT NULL
+)
+WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
+
+
+CREATE TABLE [dbo].[ForcastCallFailure] (
+    [Time] datetime NOT NULL,
+    [CallFailure] bigint NOT NULL
+)
+WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
+
+1. Click: **Execute**
+
+
+### Step 3) Create the AML service
+
+1. Browse: http://gallery.cortanaintelligence.com/Experiment/CDR-Call-Failure-Prediction-Azure-Data-Lake-1 # You will copy this experiment from the gallery
+1. Click: **Open in Studio**
+1. Select: REGION: **[*REGION*]** (Up to you)
+1. Select: WORKSPACE: **[*WORKSPACE*]** (Your workspace)
+1. Click: **Import Data**
+1. Type: Database server name: **adl-[*UNIQUE*].database.windows.net**
+1. Type: Password: **pass@word1**
+1. Click: **Export Data**
+1. Type: Database server name: **adl-[*UNIQUE*].database.windows.net**
+1. Type: Server user account password: **pass@word1**
+1. Click: **RUN** > **DEPLOY WEB SERVICE**
+
+
+### Step 4) Edit and start the ASA job
+
+ Browse: https://manage.windowsazure.com
+
+ To edit the input of the  job that output to PowerBI
+1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]powerbi**
+1. Click: **INPUTS**> **cdreventhubinput** >
+1. Type:  EVENT HUB CONSUMER GROUP: **powerbi**
+1. Click: **SAVE** > **Yes**
+
+To edit the output of the  job that output to PowerBI
+1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]powerbi**>**OUTPUTS**
+1. Click: **DELETE** > **Yes**
+1. Click: **ADD OUTPUT**
+1. Select: **Power BI**
+1. Click: **Next** > **Authorize Now** (Login with your credentials)
+1. Type: OUTPUT ALIAS: **callinfoperminute**
+1. Type: DATASET NAME: **callinfoperminute** (This dataset will be overwritten in PBI should it already exist)
+1. Type: TABLE NAME: **callinfoperminute**
+1. Select: WORKSPACE: **My Workspace** (Default)
+1. Click: **Finish** > **Start** > **Finish** (You do not need to specify a custom time)
+
+Browse: https://manage.windowsazure.com
+
+To edit the input of the  job that output to Data Lake
+1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]datalake**
+1. Click: **INPUTS**> **datalakestoreoutput** >
+1. Type:  EVENT HUB CONSUMER GROUP: **datalake**
+1. Click: **SAVE** > **Yes**
+
+To edit the output of the  job that output to Data Lake
+1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]datalake**>**OUTPUTS**
+1. Click: **DELETE** > **Yes**
+1. Click: **ADD OUTPUT**
+1. Select: **Data Lake Store**
+1. Click: **Next** > **Authorize Now** (Login with your credentials)
+1. Click: **Next**
+1. Type: OUTPUT ALIAS: **datalakestoreoutput**
+1. Select DATA LAKE STORE ACCOUNT: **adls[unique]**
+1. Type: PATH PREFIX PATTERN: **/cdrdata/input/{date}/{time}**
+1. Select DATE FORMAT: **YYYY/MM/DD**
+1. Select TIME FORMAT: **HH**
+1. Click: **Next** > 1. Click: **Next**
+1. Click: **Finish** > **Start** > **Finish** (You do not need to specify a custom time)
+
+
+
+### Deploy the data generator as a Web Job
+
+1. Download data generator: https://github.com/Azure/Cortana-Intelligence-Gallery-Content/blob/master/Tutorials/SQL-Data-Warehouse/datagenerator.zip
+1. Unzip: **datagenerator.zip**
+1. Edit: **Rage.exe.config**
+1. Replace: EVENTHUBNAME: With: **personaleventhub[*UNIQUE*]**
+1. Get CONNECTION STRING
+    1. Browse: https://manage.windowsazure.com (Get the endpoint)
+    1. Click: SERVICE BUS
+    1. Select: **personalservicebus[*UNIQUE*]**
+    1. Click: CONNECTION INFORMATION
+    1. Copy: CONNECTION STRING
+1. Replace: ENDPOINT: With: CONNECTION STRING
+1. Zip: **datagenerator.zip**
+1. Browse: https://manage.windowsazure.com
+1. Click: **NEW** > **COMPUTE** > **WEB APP** > **QUICK CREATE**
+1. Type: URL: **ratings[*UNIQUE*]**
+1. Select: APP SERVICE PLAN: From your subscription
+1. Click: **CREATE WEB APP** > **WEB APPS** > **ratings[*UNIQUE*]** > **WEBJOBS** > **ADD A JOB**
+1. Type: NAME: **ratings[*UNIQUE*]**
+1. Browse: **datagenerator.zip**
+1. Select: HOW TO RUN: **Run continuously**
+1. Click: **Finish**
+
+Step 3) Get connection string from Event Hub
+-------------------------------------------
+
+Data generator
+
+
+Step 2) Modify Output of Azure Stream Analytic Jobs
 -----------------------------------------
+
+The outputs of the two Azure Stream Analytic Jobs in the above are just a place holder. Now go to
 
 The Azure Storage Account will be used to manage different storage blobs
 that will be associated with this sample. The Azure Storage Account can
