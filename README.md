@@ -86,20 +86,52 @@ Predictive analytics is done by using the batch endpoint of an experiment publis
 
 
 
-Technical Description
+Deploy
 =====================
 
-The following text describes the different components of the
-architecture, how they interact with the other components and their
-dependencies. This section of the sample will describe the necessary
-steps to create the different components manually, however links to
-Azure Resource Management scripts are provided to automate the
-replication of this architecture
+Below are the steps to deploy the use case into your Azure subscription. Note that to condense the steps somewhat, **>** is used between repeated actions. For example:
 
-![](media/resourceGroup.png)
+1. Click: **Button A**
+1. Click: **Button B**
 
-Step 1) Create a resource group.
+is written as
+
+1. Click: **Button A** > **Button B**  
+
+
+
+Step 1) Deployment of Multiple Resources, including:
 -----------------------------------------
+1. Service Bus,
+2. Event Hub,
+3. Stream Analytics Job
+4. SQL Server, SQL Data Warehouse,
+5. Azure Data Lake Store Account
+6. Azure Data Lake Analytics Account
+
+To get started, click the below button.
+
+<a target="_blank" id="deploy-to-azure" href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Froalexan%2FSolutionArchitects%2Fmaster%2Fazuredeploy_part1.json"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+
+This will create a new "blade" in the Azure portal.
+
+![arm1-image](./media/arm1.png)
+
+1. Parameters
+   1. Type: UNIQUE (string): **[*UNIQUE*]** (You need to select a globally unique string)
+   1. Select: LOCATION: **[*LOCATION*]** (The region where everything will be deployed)
+   1. Click: **OK**
+1. Select: Subscription: **[*SUBSCRIPTION*]** (The Azure subscription you want to use)
+1. Resource group
+   1. Select: **New**
+   1. Type: New resource group name: **[*UNIQUE*]** (Same as above)
+1. Select: Resource group location: **[*LOCATION*]** (Same as above)
+1. Click: **Review legal terms** > **Create**
+1. Check: **Pin to dashboard** (If you want it on your dashboard)
+1. Click: **Create**
+
+
+
 
 The resource group will serve as an organizational framework for the
 associated Azure services.
