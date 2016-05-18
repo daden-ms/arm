@@ -1,0 +1,46 @@
+{
+    "name": "DataLakeCDRSummary",
+    "properties": {
+        "description": "Get hourly call statistics by switch and trunkr",
+        "activities": [
+            {
+                "type": "DataLakeAnalyticsU-SQL",
+                "typeProperties": {
+                    "scriptPath": "cdrdata/script/cdrSummary.txt",
+                    "scriptLinkedService": "AzureStorageLinkedService",
+                    "degreeOfParallelism": 6,
+                    "priority": 100,
+                    "parameters": {
+                        "in": "$$Text.Format('/cdrdata/input/{0:yyyy/MM/dd/HH}_{{*}}', WindowStart)",
+                        "out": "$$Text.Format('/cdrdata/aggregate/{0:yyyy/MM/dd/HH/mm}_hourSummary.csv', WindowStart)"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "DataLakeTable15Min"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "DataLakeCDRAggregateTable15Min"
+                    }
+                ],
+                "policy": {
+                    "timeout": "06:00:00",
+                    "executionPriorityOrder": "NewestFirst",
+                    "retry": 3
+                },
+                "scheduler": {
+                    "frequency": "Minute",
+                    "interval": 15
+                },
+                "name": "cdrSummary",
+                "linkedServiceName": "AzureDataLakeAnalyticsLinkedService"
+            }
+        ],
+        "start": "2016-05-12T19:00:00Z",
+        "end": "2016-05-12T20:00:00Z",
+        "isPaused": true,
+        "pipelineMode": "Scheduled"
+    }
+}

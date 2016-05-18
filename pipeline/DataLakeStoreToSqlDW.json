@@ -1,0 +1,46 @@
+{
+    "name": "DataLakeStoreToSqlDW",
+    "properties": {
+        "description": "Move cdr hour summary data from data lake to data warehouse",
+        "activities": [
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureDataLakeStoreSource"
+                    },
+                    "sink": {
+                        "type": "SqlDWSink",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "DataLakeCDRAggregateTable15Min"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "AzureSqlDWAggregated15Min"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Minute",
+                    "interval": 15
+                },
+                "name": "EgressDataLake",
+                "description": "Move data from data lake  to sql dw"
+            }
+        ],
+        "start": "2016-05-12T19:00:00Z",
+        "end": "2016-05-12T20:00:00Z",
+        "isPaused": true,
+        "pipelineMode": "Scheduled"
+    }
+}

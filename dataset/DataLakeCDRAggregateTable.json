@@ -1,0 +1,64 @@
+{
+    "name": "DataLakeCDRAggregateTable",
+    "properties": {
+        "published": false,
+        "description": "The endpoint for the output from ADLQ processing of CDR data",
+        "type": "AzureDataLakeStore",
+        "linkedServiceName": "AzureDataLakeStoreLinkedService",
+        "typeProperties": {
+            "fileName": "{Minute}_hourSummary.csv",
+            "folderPath": "/cdrdata/aggregate/{Year}/{Month}/{Day}/{Hour}/",
+            "format": {
+                "type": "TextFormat",
+                "rowDelimiter": "\n",
+                "columnDelimiter": ","
+            },
+            "partitionedBy": [
+                {
+                    "name": "Year",
+                    "value": {
+                        "type": "DateTime",
+                        "date": "SliceStart",
+                        "format": "yyyy"
+                    }
+                },
+                {
+                    "name": "Month",
+                    "value": {
+                        "type": "DateTime",
+                        "date": "SliceStart",
+                        "format": "MM"
+                    }
+                },
+                {
+                    "name": "Day",
+                    "value": {
+                        "type": "DateTime",
+                        "date": "SliceStart",
+                        "format": "dd"
+                    }
+                },
+                {
+                    "name": "Hour",
+                    "value": {
+                        "type": "DateTime",
+                        "date": "SliceStart",
+                        "format": "HH"
+                    }
+                },
+                {
+                    "name": "Minute",
+                    "value": {
+                        "type": "DateTime",
+                        "date": "SliceStart",
+                        "format": "mm"
+                    }
+                }
+            ]
+        },
+        "availability": {
+            "frequency": "Minute",
+            "interval": 15
+        }
+    }
+}
