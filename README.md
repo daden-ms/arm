@@ -116,7 +116,7 @@ To get started, click the below button.
 This will create a new "blade" in the Azure portal.
 
 
-![](media/arm1.png)
+![](media/arm1.PNG)
 
 1. Parameters
    1. Type: UNIQUE (string): **[*UNIQUE*]** (You need to select a globally unique string)
