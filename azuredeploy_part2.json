@@ -126,9 +126,6 @@
             "type": "Microsoft.DataFactory/datafactories", 
             "resources": [
                 {
-                    "dependsOn": [
-                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
-                    ], 
                     "type": "linkedservices", 
                     "name": "AzureSqlDWLinkedService", 
                     "apiVersion": "2015-09-01", 
