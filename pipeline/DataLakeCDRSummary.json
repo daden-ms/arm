@@ -17,12 +17,12 @@
                 },
                 "inputs": [
                     {
-                        "name": "DataLakeTable15Min"
+                        "name": "DataLakeTable"
                     }
                 ],
                 "outputs": [
                     {
-                        "name": "DataLakeCDRAggregateTable15Min"
+                        "name": "DataLakeCDRAggregateTable"
                     }
                 ],
                 "policy": {
