@@ -55,7 +55,7 @@
       "location": "East US 2"
     },
     "currentSolAccSettings": "[variables('solutionAccSettings')['personal']]",
-    "storageAccountName": "[concat('adla', parameters('unique'))]",
+    "storageAccountName": "[concat('storage', parameters('unique'))]",
     "solutionAccSettings": {
       "personal": {
         "datafactorySettings": {
