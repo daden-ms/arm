@@ -174,20 +174,20 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 1. Select: **New Query...**
 1. Copy and paste:
 
-CREATE TABLE [dbo].[SwitchCallInfo] (
-    [Time] datetime NOT NULL,
-    [Switch] varchar(100) COLLATE Latin1_General_100_CI_AS_KS_WS NOT NULL,
-    [CallCount] bigint NOT NULL,
-    [CallFailure] bigint NOT NULL
-)
-WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
+  CREATE TABLE [dbo].[SwitchCallInfo] (
+      [Time] datetime NOT NULL,
+      [Switch] varchar(100) COLLATE Latin1_General_100_CI_AS_KS_WS NOT NULL,
+      [CallCount] bigint NOT NULL,
+      [CallFailure] bigint NOT NULL
+  )
+  WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
 
 
-CREATE TABLE [dbo].[ForcastCallFailure] (
-    [Time] datetime NOT NULL,
-    [CallFailure] bigint NOT NULL
-)
-WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
+  CREATE TABLE [dbo].[ForcastCallFailure] (
+      [Time] datetime NOT NULL,
+      [CallFailure] bigint NOT NULL
+  )
+  WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
 
 1. Click: **Execute**
 
@@ -211,13 +211,16 @@ WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
 
  Browse: https://manage.windowsazure.com
 
- To edit the input of the  job that output to PowerBI
+#### To edit the input of the  job that output to PowerBI
+
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]powerbi**
 1. Click: **INPUTS**> **cdreventhubinput** >
 1. Type:  EVENT HUB CONSUMER GROUP: **powerbi**
 1. Click: **SAVE** > **Yes**
 
-To edit the output of the  job that output to PowerBI
+
+#### To edit the output of the  job that output to PowerBI
+
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]powerbi**>**OUTPUTS**
 1. Click: **DELETE** > **Yes**
 1. Click: **ADD OUTPUT**
@@ -231,13 +234,15 @@ To edit the output of the  job that output to PowerBI
 
 Browse: https://manage.windowsazure.com
 
-To edit the input of the  job that output to Data Lake
+####To edit the input of the  job that output to Data Lake
+
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]datalake**
 1. Click: **INPUTS**> **datalakestoreoutput** >
 1. Type:  EVENT HUB CONSUMER GROUP: **datalake**
 1. Click: **SAVE** > **Yes**
 
-To edit the output of the  job that output to Data Lake
+#### To edit the output of the  job that output to Data Lake
+
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]datalake**>**OUTPUTS**
 1. Click: **DELETE** > **Yes**
 1. Click: **ADD OUTPUT**
@@ -333,18 +338,18 @@ This will create a new "blade" in the Azure portal.
 1. Copy
 
 
-{
-    "name": "AzureDataLakeStoreLinkedService",
-    "properties": {
-        "type": "AzureDataLakeStore",
-        "description": "",
-        "typeProperties": {
-            "authorization": "<Click 'Authorize' to allow this data factory and the activities it runs to access this Data Lake Store with your access rights>",
-            "dataLakeStoreUri": "'https://adls[unique].azuredatalakestore.net/webhdfs/v1",
-            "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
-        }
-    }
-}
+  {
+      "name": "AzureDataLakeStoreLinkedService",
+      "properties": {
+          "type": "AzureDataLakeStore",
+          "description": "",
+          "typeProperties": {
+              "authorization": "<Click 'Authorize' to allow this data factory and the activities it runs to access this Data Lake Store with your access rights>",
+              "dataLakeStoreUri": "'https://adls[unique].azuredatalakestore.net/webhdfs/v1",
+              "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
+          }
+      }
+  }
 
 
 To the Editor, replace [unique] with your unique string
@@ -360,18 +365,18 @@ To the Editor, replace [unique] with your unique string
 1. Copy
 
 
-{
-    "name": "AzureDataLakeAnalyticsLinkedService",
-    "properties": {
-        "type": "AzureDataLakeAnalytics",
-        "description": "",
-        "typeProperties": {
-            "authorization": "<Authorization code is automatically retrieved after clicking 'Authorize' and completing the OAuth login>",
-            "accountName": "adla[unique]",
-            "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
-        }
-    }
-}
+  {
+      "name": "AzureDataLakeAnalyticsLinkedService",
+      "properties": {
+          "type": "AzureDataLakeAnalytics",
+          "description": "",
+          "typeProperties": {
+              "authorization": "<Authorization code is automatically retrieved after clicking 'Authorize' and completing the OAuth login>",
+              "accountName": "adla[unique]",
+              "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
+          }
+      }
+  }
 
 ## Add Azure Data Lake Data Sets
 1. Hover mouse over the icon, stop at **New Data Set**, Click *New Data Store**, Select "Azure Data Lake Store"
@@ -414,10 +419,10 @@ To the Editor, replace [unique] with your unique string
 1. Browse: https://powerbi.microsoft.com
 1. Click: **Sign in** (Login with your credentials)
 1. Show: The navigation pane
-1. Click: **adllDB** (Under the Datasets folder > **Line chart** # Under Visualizations)
-1. Drag: **Time**: To: **Axis**
-1. Drag: **CallFailure**: To: **Legend**
-1. Drag: **CallCount**: To: **Values**
+1. Click: **personalDB** (Under the Datasets folder > **Line chart** # Under Visualizations)
+1. Drag: **DateTime**: To: **Axis**
+1. Drag: **DeviceId**: To: **Legend**
+1. Drag: **Rating**: To: **Values**
 1. Click: **Save**
 1. Type: Name: **personalDB**
 1. Click: **Save** > **Pin visual** (pin icon on upper-right)
@@ -479,7 +484,8 @@ The real time and especially the predictive visualizations will take a long whil
 Congratulations! If you made it to this point, you should have a running sample with real time and predictive pipelines showcasing the power of Azure Data Lake Store and its integration with Azure Machine Learning and  many of the other Azure services. The next section lists the steps to tear things down when you are done.
 
 
-###???Undeploy
+###???
+Undeploy
 1. Delete Resources (Service Bus, Event Hub, SQL Data Warehouse, Data Factories)
     1. Browse: https://portal.azure.com
     1. Click: **Resource groups**
