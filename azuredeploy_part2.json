@@ -120,12 +120,12 @@
             "name": "[concat('dataFactory', parameters('unique'), 'CDR')]", 
             "apiVersion": "2015-09-01", 
             "location": "North Europe", 
-            "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/',variables('storageAccountName'))]"
-            ], 
             "type": "Microsoft.DataFactory/datafactories", 
             "resources": [
                 {
+                    "dependsOn": [
+                        "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+                    ], 
                     "type": "linkedservices", 
                     "name": "AzureSqlDWLinkedService", 
                     "apiVersion": "2015-09-01", 
