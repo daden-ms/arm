@@ -17,12 +17,12 @@
                 },
                 "inputs": [
                     {
-                        "name": "DataLakeCDRAggregateTable15Min"
+                        "name": "DataLakeCDRAggregateTable"
                     }
                 ],
                 "outputs": [
                     {
-                        "name": "AzureSqlDWAggregated15Min"
+                        "name": "AzureSqlDWAggregated"
                     }
                 ],
                 "policy": {
