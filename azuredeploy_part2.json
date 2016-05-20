@@ -56,6 +56,7 @@
     },
     "currentSolAccSettings": "[variables('solutionAccSettings')['personal']]",
     "storageAccountName": "[concat('storage', parameters('unique'))]",
+    "adfunique": "[parameters('adfunique')]",
     "solutionAccSettings": {
       "personal": {
         "datafactorySettings": {
@@ -81,7 +82,7 @@
     "adlStoreName": "[concat('adls', parameters('unique'))]"
   },
   "parameters": {
-    "AMLAPIKey": {
+    "AMLEndPoint": {
       "defaultValue": "https://ussouthcentral.services.azureml.net/workspaces/8825fd27275c4f3799d572186b3df613/services/d1ac86531c884453826b0f1434cab087/jobs",
       "type": "string",
       "metadata": {
@@ -92,6 +93,12 @@
       "type": "string",
       "metadata": {
         "description": "A globally unique string appended to all the resources"
+      }
+    },
+    "adfunique": {
+      "type": "string",
+      "metadata": {
+        "description": "A adf unique string appended to datafactory"
       }
     },
     "location": {
@@ -107,7 +114,7 @@
         "West US"
       ]
     },
-    "AMLEndPoint": {
+    "AMLAPIKey": {
       "defaultValue": "Kfh3ko+asLFT+54uQ/MjxEsNA/nZ0IIrWDJSi7yfSzHIp94w8aph9dYjmOrU4Sk1yC04cjPro16XRK0OIhf3/g==",
       "type": "string",
       "metadata": {
@@ -117,14 +124,14 @@
   },
   "resources": [
     {
-      "name": "[concat('dataFactory', parameters('unique'), 'CDR')]",
+      "name": "[concat('dataFactory', parameters('unique'), variables('adfunique'))]",
       "apiVersion": "2015-09-01",
       "location": "North Europe",
       "type": "Microsoft.DataFactory/datafactories",
       "resources": [
         {
           "dependsOn": [
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'))]"
           ],
           "type": "linkedservices",
           "name": "AzureSqlDWLinkedService",
@@ -139,7 +146,7 @@
         },
         {
           "dependsOn": [
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'))]"
           ],
           "type": "linkedservices",
           "name": "AzureStorageLinkedService",
@@ -154,7 +161,7 @@
         },
         {
           "dependsOn": [
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]"
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'))]"
           ],
           "type": "linkedservices",
           "name": "MLLinkedService",
@@ -170,8 +177,8 @@
         },
         {
           "dependsOn": [
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]",
-            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]"
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'))]",
+            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), variables('adfunique'),'/linkedServices/', 'AzureSqlDWLinkedService')]"
           ],
           "type": "datasets",
           "name": "AzureSqlDWAggregated",
@@ -191,8 +198,8 @@
         },
         {
           "dependsOn": [
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]",
-            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]"
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'))]",
+            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), variables('adfunique'),'/linkedServices/', 'AzureSqlDWLinkedService')]"
           ],
           "type": "datasets",
           "name": "AzureSqlDWScored",
@@ -212,11 +219,11 @@
         },
         {
           "dependsOn": [
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR')]",
-            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/datasets/', 'AzureSqlDWAggregated')]",
-            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]",
-            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), 'CDR','/datasets/','AzureSqlDWScored')]",
-            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), 'CDR','/linkedServices/', 'AzureSqlDWLinkedService')]"
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'))]",
+            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), variables('adfunique'),'/datasets/', 'AzureSqlDWAggregated')]",
+            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), variables('adfunique'),'/linkedServices/', 'AzureSqlDWLinkedService')]",
+            "[concat('Microsoft.DataFactory/dataFactories/','dataFactory', parameters('unique'), variables('adfunique'),'/datasets/','AzureSqlDWScored')]",
+            "[concat('Microsoft.DataFactory/dataFactories/', 'dataFactory', parameters('unique'), variables('adfunique'),'/linkedServices/', 'AzureSqlDWLinkedService')]"
           ],
           "type": "datapipelines",
           "name": "MLPipeline",
@@ -261,7 +268,7 @@
             "end": "2016-05-12T20:00:00Z",
             "description": "Execute Identity ML pipeline",
             "start": "2016-05-12T19:00:00Z",
-            "isPaused": false,
+            "isPaused": true,
             "pipelineMode": "Scheduled"
           }
         }
