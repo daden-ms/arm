@@ -319,6 +319,7 @@ This will create a new "blade" in the Azure portal.
 
 1. Parameters
    1. Type: UNIQUE (string): **[*UNIQUE*]** (Use the one previously entered)
+   1. Type: ADFUNIQUE (string): **Azure Data Factory(ADF) Identifier** (Use a number)
    1. Select: LOCATION: **[*LOCATION*]** (Use the one previously selected)
    1. Type: AZUREMLENDPOINT: **[*AZUREMLENDPOINT*]**
 	    1. Browse: https://studio.azureml.net

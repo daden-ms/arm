@@ -82,13 +82,6 @@
     "adlStoreName": "[concat('adls', parameters('unique'))]"
   },
   "parameters": {
-    "AMLEndPoint": {
-      "defaultValue": "https://ussouthcentral.services.azureml.net/workspaces/8825fd27275c4f3799d572186b3df613/services/d1ac86531c884453826b0f1434cab087/jobs",
-      "type": "string",
-      "metadata": {
-        "description": "Azure ML experiment key"
-      }
-    },
     "unique": {
       "type": "string",
       "metadata": {
@@ -98,7 +91,7 @@
     "adfunique": {
       "type": "string",
       "metadata": {
-        "description": "A adf unique string appended to datafactory"
+        "description": "A unique number as string appended to datafactory"
       }
     },
     "location": {
@@ -116,6 +109,13 @@
     },
     "AMLAPIKey": {
       "defaultValue": "Kfh3ko+asLFT+54uQ/MjxEsNA/nZ0IIrWDJSi7yfSzHIp94w8aph9dYjmOrU4Sk1yC04cjPro16XRK0OIhf3/g==",
+      "type": "string",
+      "metadata": {
+        "description": " Azure ML experiment application key"
+      }
+    },
+    "AMLEndPoint": {
+      "defaultValue": "https://ussouthcentral.services.azureml.net/workspaces/8825fd27275c4f3799d572186b3df613/services/d1ac86531c884453826b0f1434cab087/jobs",
       "type": "string",
       "metadata": {
         "description": "Azure ML experiment batch execution end point"
