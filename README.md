@@ -209,7 +209,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 1. Click: **RUN** > **DEPLOY WEB SERVICE**
 
 
-### Step 4) Edit and start the ASA job
+### Edit and start the ASA job
 
  Browse: https://manage.windowsazure.com
 
@@ -312,7 +312,7 @@ This will create a new "blade" in the Azure portal(https://ms.portal.azure.com).
 
 This will create a new "blade" in the Azure portal.
 
-![arm1-image](./media/arm-adf.png)
+![arm1-image](./media/arm_adf.png)
 
 1. Parameters
    1. Type: UNIQUE (string): **[*UNIQUE*]** (Use the one previously entered)
