@@ -315,7 +315,7 @@ This will create a new "blade" in the Azure portal(https://ms.portal.azure.com).
 
 This will create a new "blade" in the Azure portal.
 
-![arm1-image](./media/arm2.png)
+![arm1-image](./media/arm-adf.png)
 
 1. Parameters
    1. Type: UNIQUE (string): **[*UNIQUE*]** (Use the one previously entered)
