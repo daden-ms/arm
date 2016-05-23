@@ -254,7 +254,9 @@ Browse: https://manage.windowsazure.com
 1. Type: PATH PREFIX PATTERN: **/cdrdata/input/{date}/{time}**
 1. Select DATE FORMAT: **YYYY/MM/DD**
 1. Select TIME FORMAT: **HH**
-1. Click: **Next** > 1. Click: **Next**
+1. Click: **Next**
+1. Select OUTPUT Format: CSV
+1. Click: **Next**
 1. Click: **Finish** > **Start** > **Finish** (You do not need to specify a custom time)
 
 
@@ -337,7 +339,7 @@ This will create a new "blade" in the Azure portal.
 1. Hover mouse over the icon, stop at **New Data Store**, Click *New Data Store**, Select "Azure Data Lake Store"
 1. Copy
 
-
+```
   {
       "name": "AzureDataLakeStoreLinkedService",
       "properties": {
@@ -345,12 +347,12 @@ This will create a new "blade" in the Azure portal.
           "description": "",
           "typeProperties": {
               "authorization": "<Click 'Authorize' to allow this data factory and the activities it runs to access this Data Lake Store with your access rights>",
-              "dataLakeStoreUri": "'https://adls[unique].azuredatalakestore.net/webhdfs/v1",
+              "dataLakeStoreUri": "https://adls[unique].azuredatalakestore.net/webhdfs/v1",
               "sessionId": "<OAuth session id from the OAuth authorization session. Each session id is unique and may only be used once>"
           }
       }
   }
-
+```
 
 To the Editor, replace [unique] with your unique string
 1. Click **Authorize**, input your credentials
@@ -365,7 +367,7 @@ To the Editor, replace [unique] with your unique string
 1. Copy
 
 
-  {
+```  {
       "name": "AzureDataLakeAnalyticsLinkedService",
       "properties": {
           "type": "AzureDataLakeAnalytics",
@@ -377,6 +379,9 @@ To the Editor, replace [unique] with your unique string
           }
       }
   }
+  ```
+
+Wait until the upper two linked service are deployed by using the portal to check provision state.
 
 ## Add Azure Data Lake Data Sets
 1. Hover mouse over the icon, stop at **New Data Set**, Click *New Data Store**, Select "Azure Data Lake Store"
