@@ -174,6 +174,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 1. Select: **New Query...**
 1. Copy and paste:
 
+```
   CREATE TABLE [dbo].[SwitchCallInfo] (
       [Time] datetime NOT NULL,
       [Switch] varchar(100) COLLATE Latin1_General_100_CI_AS_KS_WS NOT NULL,
@@ -188,6 +189,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
       [CallFailure] bigint NOT NULL
   )
   WITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([Time]));
+```
 
 1. Click: **Execute**
 
@@ -381,6 +383,9 @@ To the Editor, replace [unique] with your unique string
       }
   }
 ```
+To the Editor, replace [unique] with your unique string
+1. Click **Authorize**, input your credentials
+1. Click: **Deploy**
 
 Wait until the upper two linked service are deployed by using the portal to check provision state.
 
