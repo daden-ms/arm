@@ -166,7 +166,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 1. Click: **Add SQL Server...**
 1. Type: Server Name: **adl-[*UNIQUE*].database.windows.net**
 1. Select: Authentication: **Sql Server Authentication**
-1. Type: User name: **adkuser**
+1. Type: User name: **adluser**
 1. Type: Password: **pass@word1**
 1. Select: Database Name: **adlDB**
 1. Click: **Connect**
@@ -421,82 +421,89 @@ Wait until the upper two linked service are deployed by using the portal to chec
 1. Click: **Deploy**
 
 
-## ???Create the PBI dashboard
+## Create the PBI dashboard
 
-### ???Realtime visualization
+### Realtime visualization
 
 ![dashboard-usecase-realtime](./media/dashboard-usecase-realtime.png)
 
 1. Browse: https://powerbi.microsoft.com
 1. Click: **Sign in** (Login with your credentials)
-1. Show: The navigation pane
-1. Click: **personalDB** (Under the Datasets folder > **Line chart** # Under Visualizations)
-1. Drag: **DateTime**: To: **Axis**
-1. Drag: **DeviceId**: To: **Legend**
-1. Drag: **Rating**: To: **Values**
-1. Click: **Save**
-1. Type: Name: **personalDB**
-1. Click: **Save** > **Pin visual** (pin icon on upper-right)
+1. Show: The navigation pane,
+1. Scroll to the bottom to the section of **Datasets**
+1. Click: **callinfoperminute** > **Line chart** # Under Visualizations)
+1. Select: **Time**
+1. Select: **CallFailure**
+1. Select: **CallCount**
+1. Click: Editor icon under Visualizations
+1. Click: Down icon on Title
+1. Type *RealTimeView* to Title Text
+1. Click **Pin visual** (pin icon on upper-right)
+1. Click: Editor icon under Visualizations
+1. Type *RealTimeView* for the report name
+1. Click *Save and Continue**
 1. Select: **New dashboard**
-1. Type: Name: **personalDB**
+1. Type: Name: **CallInfoDashBoard**
 1. Click: **Pin**
 
-### ???Predictive visualization
-
-
-
-
-
-### ???Using historical data
-
-The real time and especially the predictive visualizations will take a long while to fill in, so below are the steps for these visualizations for a sample past event where all the data is already there.
-
-#### Real time visualization
-
-1. Edit: **personalDB2**
-1. Click: **New page**
-1. Click: **Line Chart**
-1. Expand: **Ratings**
-1. Drag: **DateTime**: To: **Axis**
-1. Drag: **DeviceId**: To: **Legend**
-1. Drag: **Rating**: To: **Values**
-1. Drag: **EventId**: To: **Visual Level Filters**
-1. Expand: **EventId**
-1. Select: **Is**
-1. Type: **2**
-1. Click: **Apply filter** > **Save**
-
-#### Predictive visualization
-
-1. Click: **Line Chart**
-1. Expand: Fields: **AverageRatings**
-1. Drag: **DateTimeStop**: To: **Axis**
-1. Drag: **AverageRating**: To: **Values**
-1. Drag: **EventId**: To: **Visual Level Filters**
-1. Expand: **EventId**
-1. Select: **Is**
-1. Type: **2**
-1. Click: **Apply filter** > **Save**
-
-#### ????Update dashboard
-
-1. Click: **Save**
-1. Select: **Existing dashboard** > **personalDB**
+1. Select: **New dashboard**
+1. Type: Name: **CallInfoDashBoard**
 1. Click: **Pin**
-1. Select: Dashboards: **personalDB**
-1. Resize tiles
 
 
+1. Click *Save**
+1. Type *RealTimeView* for the report name
+1. Click **Pin visual** (pin icon on upper-right)
+1. Select: **New dashboard**
+1. Type: Name: **CallInfoDashBoard**
+1. Click: **Pin**
+
+### Predictive visualization
+
+1. Download the Power BI Desktop application (https://powerbi.microsoft.com/en-us/desktop)
+1. Download the Power BI template file and open it with Power BI application
+1. On the application ribbon menu, choose Edit Queries
+1. Go to *Query Settings* on the right pane, double click *Source*
+
+In the SQL Server Database dialog  
+1. Type: Server Name: **adl-[*UNIQUE*].database.windows.net**
+1. Type: Database Name: **adlDB**
+1. Click OK
+1. On the application ribbon menu, click "Close and Apply"
+1. Once data is loaded, On the application ribbon menu, click "Publish"
+1. When prompt with dialog windows, click "Save"
 
 
+1. Browse: https://powerbi.microsoft.com
+1. Click: **Sign in** (Login with your credentials)
+1. Show: The navigation pane,
+1. Scroll to the bottom to the section of **Datasets**
+1. Right Click: **DataLake_CDR_Predictive**
+1. Click: *Dataset Settings*
+1. Click: Edit credentials
+1. Input: *adluser* as user name and *pass@word1* as password
+1. Click: **DataLake_CDR_Predictive** > **Line chart** # Under Visualizations)
+1. Select: **Time**
+1. Select: **ForcastCallFailure**
+1. Select: **ActualCallFailure**
+1. Click: Editor icon under Visualizations
+1. Click: Down icon on Title
+1. Type *PredictiveView* to Title Text
+1. Click **Pin visual** (pin icon on upper-right)
+1. Type *PredictiveView* for the report name
+1. Click *Save and Continue**
+1. Type *PredictiveView* for the report name
+1. Select: **Existing dashboard**
+1. Choose: Name: **CallInfoDashBoard**
+1. Click: **Pin**
 
-###???Bravo!!!
+
+###Summary
 ==========
 Congratulations! If you made it to this point, you should have a running sample with real time and predictive pipelines showcasing the power of Azure Data Lake Store and its integration with Azure Machine Learning and  many of the other Azure services. The next section lists the steps to tear things down when you are done.
 
 
-###???
-Undeploy
+###Undeploy
 1. Delete Resources (Service Bus, Event Hub, SQL Data Warehouse, Data Factories)
     1. Browse: https://portal.azure.com
     1. Click: **Resource groups**
@@ -505,51 +512,29 @@ Undeploy
 1. Delete WebApp (data generator)
     1. Browse: https://manage.windowsazure.com
     1. Click: **WEB APPS**
-    1. Select: **ratings[*UNIQUE*]** (Your web app)
+    1. Select: **[*UNIQUE*]datagenerator** (Your web app)
     1. Click: **DELETE**
 1. Delete AML Service
     1. Browse: https://studio.azureml.net
     1. Click: **WEB SERVICES**
-    1. Select: **Ratings**
+    1. Select: **CDR Call Failure Prediction (Azure Data Lake)**
     1. Click: **DELETE** > **EXPERIMENTS**
-    1. Select: **Ratings**
+    1. Select: **CDR Call Failure Prediction (Azure Data Lake)**
     1. Click: **DELETE**
 1. Delete PBI dashboard
     1. Browse: https://powerbi.microsoft.com
     1. Select: **Dashboards**
-    1. Right click: **personalDB**
-    1. Select: **REMOVE** > **Reports**
-    1. Right click: **personalDB**
-    1. Select: **REMOVE** > **Datasets**
-    1. Right click: **personalDB**
+    1. Right click: **CallInfoDashBoard**
     1. Select: **REMOVE**
-
-## Debugging
-
-### Verify AML web service is working
-
-1. Browse: https://studio.azureml.net
-1. Click: **my experiments** > **WEB SERVICES**
-1. Select: **Ratings** (Your web service)
-1. Click: **TEST** (Verify that request/response works)
-1. Click: **DATABASE QUERY**:
-      SELECT
-      CAST(Rating AS INT) AS Rating
-      FROM Ratings
-      WHERE EventId = 1
-1. Click: DATABASE SERVER NAME: **personal-[*UNIQUE*].database.windows.net** > DATABASE NAME: **personalDB** > SERVER USER ACCOUNT NAME: **personaluser** > SERVER USER ACCOUNT PASSWORD: **pass@word1** > **OK**
-
-### Verify data generator is working
-
-#### From Portal
-
-1. Browse: https://manage.windowsazure.com
-1. Click: **personalstreamanalytics[*UNIQUE*]** > **DASHBOARD** > **Operation Logs**
-1. Select: a recent log
-1. Click: DETAILS
-
-#### From SQL Client
-
-1. Connect to the Data Warehouse using a SQL client of your choice
-1. Run SQL to view the latest entries. For example:
-	      select * from Ratings order by DateTime desc;
+    1. Scroll to **Reports**
+    1. Right click: **PredictiveView**
+    1. Select: **REMOVE**
+    1. Scroll to **Reports**
+    1. Right click: **RealTimeView**
+    1. Select: **REMOVE**
+    1. Scroll to **Datasets**
+    1. Right click: **DataLake_CDR_Predictive**
+    1. Select: **REMOVE**
+    1. Scroll to **Datasets**
+    1. Right click: **callinfoperminute**
+    1. Select: **REMOVE**
