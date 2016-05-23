@@ -367,7 +367,8 @@ To the Editor, replace [unique] with your unique string
 1. Copy
 
 
-```  {
+```  
+{
       "name": "AzureDataLakeAnalyticsLinkedService",
       "properties": {
           "type": "AzureDataLakeAnalytics",
@@ -379,7 +380,7 @@ To the Editor, replace [unique] with your unique string
           }
       }
   }
-  ```
+```
 
 Wait until the upper two linked service are deployed by using the portal to check provision state.
 
