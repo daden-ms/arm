@@ -100,7 +100,7 @@ is written as
 
 
 
-### Step 1) Deployment of Multiple Resources, including:
+### Deploy Multiple Resources, including:
 -----------------------------------------
 1. Service Bus,
 2. Event Hub,
@@ -156,7 +156,7 @@ Table 1: Resources
 
 
 
-### Step 2) Create Azure SQL Data Warehouse tables
+### Create Azure SQL Data Warehouse tables
 
 Next you need to create the matching tables in the SQL Data Warehouse. You can do this by following these steps:
 
@@ -194,7 +194,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 1. Click: **Execute**
 
 
-### Step 3) Create the AML service
+### Create the AML service
 
 1. Browse: http://gallery.cortanaintelligence.com/Experiment/CDR-Call-Failure-Prediction-Azure-Data-Lake-1 # You will copy this experiment from the gallery
 1. Click: **Open in Studio**
@@ -265,10 +265,10 @@ Browse: https://manage.windowsazure.com
 
 ### Deploy the data generator as a Web Job
 
-1. Download data generator: https://github.com/daden-ms/arm/blob/master/cdrgenerator.zip, Click raw and the file will be download
-1. Unzip: **cdrdatagenerator.zip**
+1. Download data generator: https://github.com/daden-ms/arm/blob/master/DataGenerator/datagenerator.zip, Click raw and the file will be download
+1. Unzip: **datagenerator.zip**
 1. Edit: **cdr-gen.exe.config**
-1. Replace: EVENTHUBPATH: With: **adleventhub[*UNIQUE*]**
+1. Replace: EVENTHUBNAME: With: **adleventhub[*UNIQUE*]**
 1. Get CONNECTION STRING
     1. Browse: https://manage.windowsazure.com (Get the endpoint)
     1. Click: SERVICE BUS
@@ -276,20 +276,17 @@ Browse: https://manage.windowsazure.com
     1. Click: CONNECTION INFORMATION
     1. Copy: CONNECTION STRING
 1. Find: key Microsoft.ServiceBus.ConnectionString : replace its value With: CONNECTION STRING;TransportType=Amqp
-1. Zip: **cdrdatagenerator.zip**
+1. Zip: **datagenerator.zip**
 1. Browse: https://manage.windowsazure.com
 1. Click: **NEW** > **COMPUTE** > **WEB APP** > **QUICK CREATE**
 1. Type: URL: **adl[*UNIQUE*]**
 1. Select: APP SERVICE PLAN: From your subscription
 1. Click: **adl[*UNIQUE*]** > **WEBJOBS** > **ADD A JOB**
 1. Type: NAME: **adl[*UNIQUE*]**
-1. Browse: **cdrdatagenerator.zip**
+1. Browse: **datagenerator.zip**
 1. Select: HOW TO RUN: **Run continuously**
 1. Click: **Finish**
 
-(Need to update the zip so new default Parameters are set
-500 10000 RealTime 5 0.005 US001
-  )
 
 ### Upload U-SQL script to Azure Blob Storage
 
