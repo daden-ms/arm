@@ -20,6 +20,6 @@ This tutorial provides automated  components deployable through Azure Resource M
 -	**DataGenerator** –contains the zip file that can be deployed as a WebApp to simulate a phone switch
 -	**script** –contains the U-SQL job query
 -	**PowerBI** – contains the Power BI template to extract data from SQL Data Warehouse
--	media - A folder containing images used by README.md
+-	**media** - A folder containing images used by README.md
 
 Click **Get Started** on the right to begin.
