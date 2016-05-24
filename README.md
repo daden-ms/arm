@@ -260,7 +260,7 @@ Browse: https://manage.windowsazure.com
 
 ### Deploy the data generator as a Web Job
 
-1. Download data generator: https://github.com/daden-ms/arm/blob/master/DataGenerator/datagenerator.zip, Click raw and the file will be downloaded
+1. Download data generator: https://github.com/daden-ms/arm/blob/master/datagenerator.zip, Click raw and the file will be downloaded
 1. Unzip: **datagenerator.zip**
 1. Edit: **cdr-gen.exe.config**
 1. Replace: EVENTHUBNAME: With: **adleventhub[*UNIQUE*]**
