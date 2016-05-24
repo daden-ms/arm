@@ -11,7 +11,7 @@ We use a data generator to simulate a phone switch. The data generator ingests c
 
 On the batch view path, an Azure Stream Analytic job reads data from Azure Event Hub and store all the data to Azure Data Lake Store. Azure Data Lake Analytic will run a U-SQL job to generate aggregated view and a copy activity from Azure Data Factory will move the aggregated view data from Azure Data Lake to Azure SQL Data Warehouse. Orchestrated by Azure Data Factory, Azure Machine Learning reads data from Azure SQL Data Warehouse and sends predictive results back to Azure SQL Data Warehouse. Power BI interacts with Azure SQL Data Warehouse to visualize prediction.  Along this path, you will learn how to write U-SQL query, how to create tables in Azure SQL Data Warehouse, how to configure linked services, datasets and pipelines in Azure Data Factory and how to user Power BI desktop to run queries on SQL Data Warehouse to generate advanced visualization.
 
-This tutorial provides automated  components deployable through Azure Resource Manager (ARM) and will walk you through the manual steps as well. Click the green button **Get Started** on the right to take a look at the step-by-step tutorial:
+This tutorial provides automated  components deployable through Azure Resource Manager (ARM) and will walk you through the manual steps as well. Clicking the green button **Get Started** on the right will take you to a GitHub repository consisting of :
 
 - **README.md** to guide you through.
 - **azuredeploy_part1.json** – The first ARM template – creation of Service Bus, Event Hub, Stream Analytics Jobs, Blob Storage, SQL Server, SQL Data Warehouse, Azure Data Lake Store, Azure Data Lake Analytics
