@@ -61,13 +61,6 @@ following prerequisites:
 3)  a Microsoft Power BI account
     (https://powerbi.microsoft.com/en-us/)
 
-4)  Azure Data Lake Store account
-    (Access is requested through the Azure portal)
-
-5)  Azure Data Analytics account.
-    (Access is requested through the Azure portal)
-
-
 
 
 Architecture
