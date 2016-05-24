@@ -396,7 +396,7 @@ Wait until the upper two linked service are deployed by using the portal to chec
 1. Copy the content from https://github.com/daden-ms/arm/blob/master/dataset/DataLakeCDRAggregateTable.json in to the Editor
 1. Click: **Deploy**
 
-## Add Data Pipeline
+## Add Data Pipelines
 1. Hover mouse over the icon, stop at **New Pipeline**
 1. Copy the content from https://github.com/daden-ms/arm/blob/master/pipeline/DataLakeCDRSummary.json in to the Editor
 1. Edit: start: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock (for example http://www.timeanddate.com/worldclock/timezone/utc)
@@ -415,6 +415,7 @@ Wait until the upper two linked service are deployed by using the portal to chec
 1. Expand: **Pipelines**
 1. Select: **MLPipeline**
 1. Edit: start: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock (for example http://www.timeanddate.com/worldclock/timezone/utc)
+1. Edit: end: **2016-05-12T00:00:00Z**: to: Your current time in UTC 24 hour clock plus three hours (for example http://www.timeanddate.com/worldclock/timezone/utc)
 1. Edit: **"isPaused": true** : to **"isPaused": false**
 1. Click: **Deploy**
 
@@ -422,8 +423,6 @@ Wait until the upper two linked service are deployed by using the portal to chec
 ## Create the PBI dashboard
 
 ### Realtime visualization
-
-![dashboard-usecase-realtime](./media/dashboard-usecase-realtime.png)
 
 1. Browse: https://powerbi.microsoft.com
 1. Click: **Sign in** (Login with your credentials)
