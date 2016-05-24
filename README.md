@@ -288,6 +288,7 @@ Browse: https://manage.windowsazure.com
 Download the script from https://github.com/daden-ms/arm/blob/master/script/cdrSummary.txt, and save it to a folder with name "script"
 
 Download Microsoft Azure Storage Explorer, login with your credentials, and  
+
 1. Select the storage account:**storage[*unique*]**
 1. Right Click  **"Create Blob container"**
 1. Type: **cdrdata**
@@ -328,7 +329,7 @@ This will create a new "blade" in the Azure portal.
 1. Check: **Pin to dashboard** (If you want it on your dashboard)
 1. Click: **Create**
 
-## Add Azure Data Lake Store Link Service
+## Add Azure Data Lake Store Linked Service
 1. Browse: https://portal.azure.com
 1. Click: **Data factories** > **dataFactory[*UNIQUE*]** > **Author and deploy**
 1. Hover mouse over the icon, stop at **New Data Store**, Click *New Data Store**, Select "Azure Data Lake Store"
@@ -350,6 +351,7 @@ This will create a new "blade" in the Azure portal.
 ```
 
 To the Editor, replace [unique] with your unique string
+
 1. Click **Authorize**, input your credentials
 1. Click: **Deploy**
 
@@ -357,7 +359,7 @@ To the Editor, replace [unique] with your unique string
 
 
 
-## Add Azure Data Lake Analytic Link Service
+## Add Azure Data Lake Analytic Linked Service
 1. Hover mouse over the icon, stop at **New Compute**, Click *New Data Store**, Select "Azure Data Lake Analytics"
 1. Copy
 
@@ -377,6 +379,7 @@ To the Editor, replace [unique] with your unique string
   }
 ```
 To the Editor, replace [unique] with your unique string
+
 1. Click **Authorize**, input your credentials
 1. Click: **Deploy**
 
