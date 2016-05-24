@@ -61,6 +61,8 @@ following prerequisites:
 3)  a Microsoft Power BI account
     (https://powerbi.microsoft.com/en-us/)
 
+4) A local installation of <a href="https://azure.microsoft.com/en-us/documentation/articles/sql-data-warehouse-install-visual-studio/">Visual Studio with SQL Server Data Tools (SSDT)</a>
+
 
 
 Architecture
@@ -415,6 +417,9 @@ Wait until the upper two linked service are deployed by using the portal to chec
 
 ## Create the PBI dashboard
 
+At the end of this section, you will have a dashboard which looks like the following:
+![dashboard-usecase-image](./media/result-dashboard.png)
+
 ### Realtime visualization
 
 1. Browse: https://powerbi.microsoft.com
@@ -486,6 +491,8 @@ In the SQL Server Database dialog
 1. Select: **Existing dashboard**
 1. Choose: Name: **CallInfoDashBoard**
 1. Click: **Pin**
+
+
 
 
 ###Summary
