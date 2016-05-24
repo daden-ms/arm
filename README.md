@@ -421,7 +421,7 @@ Wait until the upper two linked service are deployed by using the portal to chec
 ## Create the PBI dashboard
 
 At the end of this section, you will have a dashboard which looks like the following:
-![dashboard-usecase-image](./media/result-dashboard.png)
+![dashboard-usecase-image](./media/result_dashboard.png)
 
 ### Realtime visualization
 
