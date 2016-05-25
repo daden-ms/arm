@@ -464,6 +464,7 @@ At the end of this section, you will have a dashboard which looks like the follo
 1. Go to *Query Settings* on the right pane, double click *Source*
 
 In the SQL Server Database dialog  
+
 1. Type: Server Name: **adl-[*UNIQUE*].database.windows.net**
 1. Type: Database Name: **adlDB**
 1. Click OK
