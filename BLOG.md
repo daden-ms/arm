@@ -7,13 +7,13 @@ By storing data in its native format, data lake maintains data provenance and no
 
 Figure 1 and figure 2 below illustrates the shift from ETL to ELT.
 
-<img src="media/non_ADLS_analysis.png"  width="300" height="300" />
+<img src="media/non_ADLS_analysis.png"  width="400" height="400" />
 
 Figure 1: Traditional Data Management and Analysis
 
 
 
-<img src="media/ADLS_analysis.png" width="300" height="300" />
+<img src="media/ADLS_analysis.png" width="400" height="400" />
 
 Figure 2: Data Management and Analysis in an  Data Lake Environment.
 
@@ -26,6 +26,8 @@ In addition to Azure Data Lake, Microsoft <a href="https://www.microsoft.com/en-
 To demonstrate running advanced analytics on Azure Data Lake using Cortana Intelligence Suite, we have published a tutorial that shows how to build end-to-end fully operational real-time and predictive pipelines. The architecture is as follows:
 ![](media/architecture.png)
 Figure 1: Architecture
+
+
 The use case is to show real-time call failure and  predict call failure number on a phone switch by using historical data. We use a data generator to simulate a phone switch to generate the call detail records. In the end of the solution, you should be able to see
 ![dashboard-usecase-image](./media/result_dashboard.png)
 
