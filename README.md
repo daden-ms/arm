@@ -314,14 +314,14 @@ This will create a new "blade" in the Azure portal.
    1. Type: UNIQUE (string): **[*UNIQUE*]** (Use the one previously entered)
    1. Type: ADFUNIQUE (string): **Azure Data Factory(ADF) Identifier** (Use a number)
    1. Select: LOCATION: **[*LOCATION*]** (Use the one previously selected)
+   1. Type: AZUREMLAPIKEY: **[*AZUREMLAPIKEY*]**
+     1. Browse: https://studio.azureml.net
+     1. Click: **WEB SERVICES** > **CDR Call Failure Prediction (Azure Data Lake)**
+     1. Click: Copy: **API key**
    1. Type: AZUREMLENDPOINT: **[*AZUREMLENDPOINT*]**
 	    1. Browse: https://studio.azureml.net
 	    1. Click: **WEB SERVICES** > **CDR Call Failure Prediction (Azure Data Lake)** > **BATCH EXECUTION**
 	    1. Copy: POST: **REQUEST URI** (Everything from "https" up to and including "jobs")
-   1. Type: AZUREMLAPIKEY: **[*AZUREMLAPIKEY*]**
-	    1. Browse: https://studio.azureml.net
-	    1. Click: **WEB SERVICES** > **CDR Call Failure Prediction (Azure Data Lake)**
-	    1. Click: Copy: **API key**
    1. Click: **OK**
 1. Select: Subscription: **[*SUBSCRIPTION*]** (Use the one previously selected)
 1. Select: Resource group: **[*UNIQUE*]** (Use the one previously selected)
@@ -433,8 +433,8 @@ At the end of this section, you will have a dashboard which looks like the follo
 1. Select: **Time**
 1. Select: **CallFailure**
 1. Select: **CallCount**
-1. Click: Editor icon under Visualizations
-1. Click: Down icon on Title
+1. Click: the icon under Visualizations with tooltip **Format**
+1. Click: **Title**
 1. Type *RealTimeView* to Title Text
 1. Click **Pin visual** (pin icon on upper-right)
 1. Click: Editor icon under Visualizations
@@ -476,16 +476,16 @@ In the SQL Server Database dialog
 1. Click: **Sign in** (Login with your credentials)
 1. Show: The navigation pane,
 1. Scroll to the bottom to the section of **Datasets**
-1. Right Click: **DataLake_CDR_Predictive**
+1. Right Click: **DataLakeCDRPredictive**
 1. Click: *Dataset Settings*
 1. Click: Edit credentials
 1. Input: *adluser* as user name and *pass@word1* as password
-1. Click: **DataLake_CDR_Predictive** > **Line chart** # Under Visualizations)
+1. Click: **DataLakeCDRPredictive** > **Line chart** # Under Visualizations)
 1. Select: **Time**
 1. Select: **ForcastCallFailure**
 1. Select: **ActualCallFailure**
-1. Click: Editor icon under Visualizations
-1. Click: Down icon on Title
+1. Click: the icon under Visualizations with tooltip **Format**
+1. Click: **Title**
 1. Type *PredictiveView* to Title Text
 1. Click **Pin visual** (pin icon on upper-right)
 1. Type *PredictiveView* for the report name
@@ -533,7 +533,7 @@ Congratulations! If you made it to this point, you should have a running sample 
     1. Right click: **RealTimeView**
     1. Select: **REMOVE**
     1. Scroll to **Datasets**
-    1. Right click: **DataLake_CDR_Predictive**
+    1. Right click: **DataLakeCDRPredictive**
     1. Select: **REMOVE**
     1. Scroll to **Datasets**
     1. Right click: **callinfoperminute**
