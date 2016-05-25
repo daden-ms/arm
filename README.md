@@ -458,6 +458,8 @@ At the end of this section, you will have a dashboard which looks like the follo
 
 ### Predictive visualization
 
+#### Power BI Desktop Part
+
 1. Download the Power BI Desktop application (https://powerbi.microsoft.com/en-us/desktop)
 1. Download the Power BI template file and open it with Power BI application
 1. On the application ribbon menu, choose Edit Queries
@@ -472,6 +474,7 @@ In the SQL Server Database dialog
 1. Once data is loaded, On the application ribbon menu, click "Publish"
 1. When prompt with dialog windows, click "Save"
 
+#### Power BI Website Part
 
 1. Browse: https://powerbi.microsoft.com
 1. Click: **Sign in** (Login with your credentials)
