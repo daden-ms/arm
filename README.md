@@ -469,7 +469,9 @@ In the SQL Server Database dialog
 
 1. Type: Server Name: **adl-[*UNIQUE*].database.windows.net**
 1. Type: Database Name: **adlDB**
-1. Click OK
+1. Click: OK
+1. Choose: **Database** for Authentication method
+1. Input: **adluser** for username and  **pass@word1** for password   
 1. On the application ribbon menu, click "Close and Apply"
 1. Once data is loaded, On the application ribbon menu, click "Publish"
 1. When prompt with dialog windows, click "Save"
