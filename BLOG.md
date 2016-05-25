@@ -7,7 +7,7 @@ By storing data in its native format, data lake maintains data provenance and no
 
 Figure 1 and figure 2 below illustrates the shift from ETL to ELT.
 
-<img src="media/non_ADLS_analysis.png" style="width:500px;height:500px;">
+<img src="media/non_ADLS_analysis.png" style="width:300px;height:300px;">
 
 Figure 1: Traditional Data Management and Analysis
 
