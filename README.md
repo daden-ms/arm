@@ -331,7 +331,7 @@ This will create a new "blade" in the Azure portal.
 
 ## Add Azure Data Lake Store Linked Service
 1. Browse: https://portal.azure.com
-1. Click: **Data factories** > **dataFactory[*UNIQUE*]** > **Author and deploy**
+1. Click: **Data factories** > **dataFactory[*UNIQUE*][*ADFUNIQUE*]** > **Author and deploy**
 1. Hover mouse over the icon, stop at **New Data Store**, Click *New Data Store**, Select "Azure Data Lake Store"
 1. Copy
 
@@ -378,7 +378,7 @@ To the Editor, replace [unique] with your unique string
       }
   }
 ```
-To the Editor, replace [unique] with your unique string
+To the Editor, replace [**unique**] with your unique string
 
 1. Click **Authorize**, input your credentials
 1. Click: **Deploy**
