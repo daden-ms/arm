@@ -429,17 +429,17 @@ At the end of this section, you will have a dashboard which looks like the follo
 1. Click: **Sign in** (Login with your credentials)
 1. Show: The navigation pane,
 1. Scroll to the bottom to the section of **Datasets**
-1. Click: **callinfoperminute** > **Line chart** # Under Visualizations)
+1. Click: **callinfoperminute** > **Line chart**  Under Visualizations
 1. Select: **Time**
 1. Select: **CallFailure**
 1. Select: **CallCount**
 1. Click: the icon under Visualizations with tooltip **Format**
 1. Click: **Title**
-1. Type *RealTimeView* to Title Text
+1. Type **RealTimeView** to Title Text
 1. Click **Pin visual** (pin icon on upper-right)
 1. Click: Editor icon under Visualizations
-1. Type *RealTimeView* for the report name
-1. Click *Save and Continue**
+1. Type **RealTimeView** for the report name
+1. Click **Save and Continue**
 1. Select: **New dashboard**
 1. Type: Name: **CallInfoDashBoard**
 1. Click: **Pin**
@@ -449,7 +449,7 @@ At the end of this section, you will have a dashboard which looks like the follo
 1. Click: **Pin**
 
 
-1. Click *Save**
+1. Click **Save**
 1. Type *RealTimeView* for the report name
 1. Click **Pin visual** (pin icon on upper-right)
 1. Select: **New dashboard**
@@ -461,7 +461,7 @@ At the end of this section, you will have a dashboard which looks like the follo
 #### Power BI Desktop Part
 
 1. Download the Power BI Desktop application (https://powerbi.microsoft.com/en-us/desktop)
-1. Download the Power BI template file and open it with Power BI application
+1. Download the Power BI template file https://github.com/daden-ms/arm/blob/master/PowerBI/DataLakeCDRPredictive.pbix (Click Raw to start downloading) and open it with Power BI application
 1. On the application ribbon menu, choose Edit Queries
 1. Go to *Query Settings* on the right pane, double click *Source*
 
@@ -484,13 +484,13 @@ In the SQL Server Database dialog
 1. Click: *Dataset Settings*
 1. Click: Edit credentials
 1. Input: *adluser* as user name and *pass@word1* as password
-1. Click: **DataLakeCDRPredictive** > **Line chart** # Under Visualizations)
+1. Click: **DataLakeCDRPredictive** > **Line chart** Under Visualizations
 1. Select: **Time**
 1. Select: **ForcastCallFailure**
 1. Select: **ActualCallFailure**
 1. Click: the icon under Visualizations with tooltip **Format**
 1. Click: **Title**
-1. Type *PredictiveView* to Title Text
+1. Type **PredictiveView** to Title Text
 1. Click **Pin visual** (pin icon on upper-right)
 1. Type *PredictiveView* for the report name
 1. Click *Save and Continue**
