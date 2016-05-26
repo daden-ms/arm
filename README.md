@@ -438,12 +438,12 @@ At the end of this section, you will have a dashboard which looks like the follo
 1. Click: **callinfoperminute** > **Line chart**  Under Visualizations
 1. Select: **Time**
 1. Select: **CallFailure**
-1. Select: **CallCount**
 1. Click: the icon under Visualizations with tooltip **Format**
+1. Click: **X-Axis**, Toggle **Title** to **On**
+1. Click: **Y-Axis**, Toggle **Title** to **On**
 1. Click: **Title**
 1. Type **RealTimeView** to Title Text
 1. Click **Pin visual** (pin icon on upper-right)
-1. Click: Editor icon under Visualizations
 1. Type **RealTimeView** for the report name
 1. Click **Save and Continue**
 1. Select: **New dashboard**
@@ -486,13 +486,13 @@ In the SQL Server Database dialog
 1. Select: **Time**
 1. Select: **ForcastCallFailure**
 1. Select: **ActualCallFailure**
+1. Click: **X-Axis**, Toggle **Title** to **On**
 1. Click: the icon under Visualizations with tooltip **Format**
 1. Click: **Title**
 1. Type **PredictiveView** to Title Text
 1. Click **Pin visual** (pin icon on upper-right)
 1. Type *PredictiveView* for the report name
 1. Click *Save and Continue**
-1. Type *PredictiveView* for the report name
 1. Select: **Existing dashboard**
 1. Choose: Name: **CallInfoDashBoard**
 1. Click: **Pin**
