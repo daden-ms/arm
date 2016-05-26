@@ -216,7 +216,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 
  Browse: https://manage.windowsazure.com
 
-### To edit the input of the  job that outputs to PowerBI
+### To edit the input of the  job that outputs to Power BI
 
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]powerbi**
 1. Click: **INPUTS**> **cdreventhubinput** >
@@ -224,7 +224,7 @@ Next you need to create the matching tables in the SQL Data Warehouse. You can d
 1. Click: **SAVE** > **Yes**
 
 
-### To edit the output of the  job that outputs to PowerBI
+### To edit the output of the  job that outputs to Power BI
 
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]powerbi**>**OUTPUTS**
 1. Click: **DELETE** > **Yes**
@@ -242,7 +242,7 @@ Browse: https://manage.windowsazure.com
 ### To edit the input of the  job that outputs to Data Lake
 
 1. Click: **STREAM ANALYTICS** > **adlstreamanalytics[*unique*]datalake**
-1. Click: **INPUTS**> **datalakestoreoutput** >
+1. Click: **INPUTS**> **cdreventhubinput** >
 1. Type:  EVENT HUB CONSUMER GROUP: **datalake**
 1. Click: **SAVE** > **Yes**
 
@@ -261,7 +261,6 @@ Browse: https://manage.windowsazure.com
 1. Select TIME FORMAT: **HH**
 1. Click: **Next**
 1. Select OUTPUT Format: CSV
-1. Click: **Next**
 1. Click: **Finish** > **Start** > **Finish** (You do not need to specify a custom time)
 
 
@@ -392,11 +391,11 @@ To the Editor, replace [**unique**] with your unique string
 Wait until the upper two linked service are deployed by using the portal to check provision state.
 
 ### Add Azure Data Lake Data Sets
-1. Hover mouse over the icon, stop at **New Data Set**, Click *New Data Store**, Select "Azure Data Lake Store"
+1. Hover mouse over the icon, stop at **New Data Set**, Click **New Data Set**, Select "Azure Data Lake Store"
 1. Copy the content from https://github.com/daden-ms/arm/blob/master/dataset/DataLakeTable.json in to the Editor
 1. Click: **Deploy**
 
-1. Hover mouse over the icon, stop at **New Data Set**, Click *New Data Store**, Select "Azure Data Lake Store"
+1. Hover mouse over the icon, stop at **New Data Set**, Click **New Data Set**, Select "Azure Data Lake Store"
 1. Copy the content from https://github.com/daden-ms/arm/blob/master/dataset/DataLakeCDRAggregateTable.json in to the Editor
 1. Click: **Deploy**
 
