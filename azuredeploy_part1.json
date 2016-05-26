@@ -88,17 +88,16 @@
             }
         }, 
         "location": {
-            "defaultValue": "West US", 
+            "defaultValue": "East US", 
             "metadata": {
                 "description": "The location to deploy all the resources (except the Data Lake Storage and Analytics accounts, which must be created in East US 2)"
             }, 
-            "type": "string", 
-            "allowedValues": [
-                "South Central US", 
-                "West Europe", 
-                "East US 2", 
-                "West US"
-            ]
+            "type": "string",
+          "allowedValues": [
+            "East US",
+            "North Europe",
+            "West US"
+          ]
         }
     }, 
     "resources": [

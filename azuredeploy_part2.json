@@ -95,14 +95,13 @@
       }
     },
     "location": {
-      "defaultValue": "West US",
+      "defaultValue": "East US",
       "metadata": {
         "description": "Location to deploy resources"
       },
       "type": "string",
       "allowedValues": [
-        "South Central US",
-        "West Europe",
+        "East US",
         "North Europe",
         "West US"
       ]
