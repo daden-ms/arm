@@ -14,7 +14,7 @@
     "workerSize": "1",
     "webSitePackageUrl": "https://daisydeng.blob.core.windows.net/datagenerator/cdr-gen.zip",
     "sfResourceId": "[resourceId('Microsoft.Web/serverFarms', variables('hostingPlanName'))]",
-    "nsResourceId": "[resourceId('Microsoft.Eventhub/namespaces', concat(variables('currentSolAccSettings').title,'servicebus',parameters('unique')))]",
+    "nsResourceId": "[resourceId('Microsoft.Eventhub/namespaces', concat(variables('currentSolAccSettings').title,'servicebus',variables('namePrefix')))]",
     "paramVars": {
       "location": "[parameters('location')]",
       "accountType": "Standard-GRS",
@@ -26,7 +26,7 @@
         "sqlDatabaseName": "[concat(variables('currentSolAccSettings').title,'DB')]",
         "sqlServerPassword": "pass@word1",
         "sqlEndIpAddress": "255.255.255.255",
-        "sqlServerName": "[concat(variables('currentSolAccSettings').title,'-',parameters('unique'))]",
+        "sqlServerName": "[concat(variables('currentSolAccSettings').title,'-',variables('namePrefix'))]",
         "requestedServiceObjectiveName": "DW400",
         "sqlMaxSizeBytes": "2147483648",
         "sqlCollation": "SQL_Latin1_General_CP1_CI_AS",
@@ -35,13 +35,13 @@
         "sqlServerUserName": "[concat(variables('currentSolAccSettings').title,'user')]"
       },
       "asaSettings": {
-        "asaJobName": "[concat(variables('currentSolAccSettings').title,'streamanalytics',parameters('unique'))]",
+        "asaJobName": "[concat(variables('currentSolAccSettings').title,'streamanalytics',variables('namePrefix'))]",
         "asaBlobContainer": "[concat(variables('currentSolAccSettings').title,'stream')]",
         "asaBlobPathPattern": "rawdata/{date}/{time}",
         "asaLocation": "[parameters('location')]"
       },
       "storageSettings": {
-        "storageAccountName": "[concat(variables('currentSolAccSettings').title,'storage',parameters('unique'))]"
+        "storageAccountName": "[concat(variables('currentSolAccSettings').title,'storage',variables('namePrefix'))]"
       },
       "apiVersion": {
         "asaApiVersion": "2015-09-01",
@@ -144,6 +144,7 @@
         "name": "[variables('webJobSiteName')]",
         "serverFarmId": "[variables('hostingPlanName')]",
         "siteConfig": {
+          "AlwaysOn": true,
           "appSettings": [
             {
               "Name": "EventHubName",
@@ -152,15 +153,6 @@
             {
               "Name": "Microsoft.ServiceBus.ConnectionString",
               "Value": "[concat(listKeys(resourceid('Microsoft.EventHub/namespaces/authorizationRules',variables('settings')['serviceBusSettings'].serviceBusNamespaceName,'RootManageSharedAccessKey'),variables('settings')[ 'apiVersion' ].serviceBusApiVersion ).primaryConnectionString,';TransportType=Amqp')]"
-            },
-
-            {
-              "Name": "SCM_COMMAND_IDLE_TIMEOUT",
-              "Value": "1200"
-            },
-            {
-              "Name": "WEBJOBS_IDLE_TIMEOUT",
-              "Value": "1800"
             }
           ]
         }
