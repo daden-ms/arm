@@ -1,0 +1,176 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "adminUsername": "azureuser",
+        "vmSize": "Standard_NC6",
+        "sshKeyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQChF/Pa/bitoC9zOoAnQoYJnkjgXg2OkAawpAwEkzuRSB+PsFoXxZt9+tZKbym0Rcqpqy33r1uuk3P7lwukYq9ryLI2nfENIZ7JRQSKz5c9P3kS2Ec3MTImYkCMMBOjzSwR8LbSsqHbegIgLCOWOmmZUIJmos4G982j1jf98JE4epG6kEURPte7/Fr6TyngcCU6O1Sc1y7b42cfNCwneVBRuHsq1aJKHRTgos/6JHz0Wqg+uK6ilI/DGa39A0Al8TW5nGZMC1KpOmSDp6pCQ3DbUzwGEcS7IOmjgHw+7ljMwrAP8cUYqxnRMn6aTRDSQRBRRrXRMvTYymtaQRl4FJ4NRWcwl65+JUTk7yfyEhinS3K32wp8cJBvqUyDvzKbhR2dlSGu1J5zhSuoiUr73NSxEZGCosowHrPESnk+KwWh5Dm8TTyf8E0oVECUiQ3sG9OY/6O73i9+xyvdNNW4k2IMbIUNS6QMezTnV3BRUtCzeucG7o6sYU17O8iCqD1iPG/bmsZd6xE5orE988c5BMY5TPuDAWGoyOW161yvFmJxZm7PJi2jNgm55j3RkdmqNW2cHlIy7hcE+bStx4wEzeRag/ZfjTxjm5Mvaz9yI26ZSBO2qsLKxEsv2/yQvFodHuyhbzSBUDvzf0qQrX+NMIMhvwcOlqMBLAupr6+ZMKVlSQ== azureuser@paulsh-ubuntu-2",
+        "dataDiskSizeInGB": "100",
+        "vmName": "[resourceGroup().name]",
+        "location": "[resourceGroup().location]",
+        "imagePublisher": "Canonical",
+        "imageOffer": "UbuntuServer",
+        "OSDiskName": "os",
+        "DataDiskName": "data",
+        "sku": "16.04-LTS",
+        "nicName": "[variables('vmName')]",
+        "addressPrefix": "10.0.0.0/16",
+        "subnetName": "Subnet",
+        "subnetPrefix": "10.0.0.0/24",
+        "storageAccountType": "Standard_LRS",
+        "storageAccountName": "[concat(uniquestring(resourceGroup().name),'ldsvm')]",
+        "publicIPAddressType": "Dynamic",
+        "publicIPAddressName": "[variables('vmName')]",
+        "vmStorageAccountContainerName": "vhds",
+        "virtualNetworkName": "[variables('vmName')]",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+        "sshKeyPath": "[concat('/home/',variables('adminUsername'),'/.ssh/authorized_keys')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[variables('location')]",
+            "properties": {
+                "accountType": "[variables('storageAccountType')]"
+            }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIPAddressName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('publicIPAddressName')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('virtualNetworkName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('addressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('vmName')]",
+            "location": "[variables('location')]",
+            "tags": {
+                "Application": "DataScience"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vmName')]",
+                    "adminUsername": "[variables('adminUsername')]",
+                    "linuxConfiguration": {
+			            "disablePasswordAuthentication": "true",
+                        "ssh": {
+                            "publicKeys": [
+                            {
+                                "path": "[variables('sshKeyPath')]",
+                                "keyData": "[variables('sshKeyData')]"
+                            }
+                            ]
+                        }
+	        	    }
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "16.04-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'), variables('vmName'),  '.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "diskSizeGB": "50",
+                        "createOption": "fromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "name": "data-0",
+                            "vhd": {
+                                "uri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('DataDiskName'), variables('vmName'), '.vhd')]"
+                            },
+                            "createOption": "Empty",
+                            "diskSizeGB": "[variables('dataDiskSizeInGB')]",
+                            "lun": 0
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "false"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "DataScienceVmUrl": { "type": "string", "value": "[concat('https://ms.portal.azure.com/#resource/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Compute/virtualMachines/', variables('vmName'))]" }
+    }
+}
