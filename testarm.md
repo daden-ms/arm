@@ -1,0 +1,1 @@
+<a target="_blank" id="deploy-to-azure" href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdaden-ms%2Farm%2Fmaster%2Fubuntu_arm_template.json"><img src="http://azuredeploy.net/deploybutton.png"/></a>
